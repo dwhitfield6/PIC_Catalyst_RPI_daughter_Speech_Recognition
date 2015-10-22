@@ -1,0 +1,1 @@
+The build environment is MPLAB X using the XC32 (v1.40) compiler (free version). The debugger is the PICKIT 3.
