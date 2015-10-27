@@ -109,6 +109,7 @@
 /******************************************************************************/
 void __ISR(_EXTERNAL_0_VECTOR , IPL7AUTO) INT0_IntHandler (void)
 {
+    PWR_Charge(TRUE);
     PWR_ReadComparator();
     IFS0bits.INT0IF = 0;
 }
@@ -119,6 +120,7 @@ void __ISR(_EXTERNAL_0_VECTOR , IPL7AUTO) INT0_IntHandler (void)
 /******************************************************************************/
 void __ISR(_EXTERNAL_1_VECTOR , IPL7AUTO) INT1_IntHandler (void)
 {
+    PWR_Charge(FALSE);
     PWR_ReadComparator();
     IFS0bits.INT1IF = 0;
 }
@@ -129,10 +131,22 @@ void __ISR(_EXTERNAL_1_VECTOR , IPL7AUTO) INT1_IntHandler (void)
 /******************************************************************************/
 void __ISR(_EXTERNAL_2_VECTOR , IPL7AUTO) INT2_IntHandler (void)
 {
-    PWR_Volts5(OFF);
-    PWR_Charge(FALSE);
+    if(PWR_ExternalInterruptEdge(COMP_VIN_Warn_INT,FALLING) == RISING)
+    {
+        MSC_RedLEDON();
+        PWR_Volts5(OFF);
+        PWR_Charge(FALSE);
+    }
+    else
+    {
+        MSC_RedLEDOFF();
+        PWR_ExternalInterruptEdge(COMP_VIN_Warn_INT,RISING); 
+        PWR_Volts5(ON);
+        PWR_Charge(TRUE);
+    }
     PWR_ReadComparator();
     IFS0bits.INT2IF = 0;
+    
 }
 
 /******************************************************************************/

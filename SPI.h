@@ -28,7 +28,7 @@
  * This is the mode configuration defines.
 /******************************************************************************/
 #define MASTER  0
-#define SLAVE   0
+#define SLAVE   1
 #define BITS8   8
 #define BITS16  16
 #define BITS32  32

@@ -6,6 +6,10 @@
  * Date         Revision    Comments
  * MM/DD/YY
  * --------     ---------   ----------------------------------------------------
+ * 10/22/15     10.0_DW0b   Fixed bug that always made the system a SPI Master.
+ *                          Added disable for PWM function so it turns off the
+ *                            RGB during sleep.
+ *                          Added template for expander card to do IR/RF
  * 10/22/15     10.0_DW0a   Initial project make ported from 
  *                            "Catalyst_RPI_daughter" tag '9.0_DW0a'.
  * 10/02/15     1.0_DW0a    Initial project make.
@@ -72,8 +76,7 @@
 
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
-/******************************************************************************/
-unsigned char data[] = "David is sending this over SPI and is an SPI slave";  
+/******************************************************************************/  
     
 /******************************************************************************/
 /* Main Program                                                               */
@@ -84,32 +87,24 @@ short main (void)
     unsigned long i;
  
     /* Initialize */
+    SYS_Watchdog(OFF);
     SYS_ConfigureOscillator();
     Init_App();
-    Init_System();
-    PWR_StatusUpdate();        
-    RDI_GetProduct();
+    Init_System();        
     
     /* Flash LEDs */
-    for (i=0;i<24;i++)
+    for (i=3;i<24;i++)
     {
         PWM_SetColor(i/3, NOTHING,NOTHING);
         MSC_DelayUS(100000);      
     }
     
-    /* Read the current alarm */
-    RTCC_ReadAlarm(&CurrentAlarm);
-    
-    /* set the Red LED to fade up */
-    PWM_SetColor(RED, FADEUP,PWM_MEDIUM);
-    
-    /* enable the watchdog */
-    SYS_Watchdog(ON);
-        
+    /* turn off the LED  */
+    PWM_SetColor(NOTHING, NOTHING,NOTHING);
+ 
     while(1)
     {
-        SYS_PetFluffyPuppy(); // pet the watchdog
-        RDI_SendToRaspberry(data,MSC_SizeOfString(data)); // send data over SPI if ready
+
     }
 }
 /*-----------------------------------------------------------------------------/

@@ -140,17 +140,6 @@ void InitPWM(void)
     RPD1R    = 0b1100;    // RD1 = OC1 aka Blue on RGB LED
     
     // Initialize Output Compare Module
-#ifdef ON
-    #undef ON
-    OC1CONbits.ON = TRUE;    // Turn off output compare peripheral
-    OC2CONbits.ON = TRUE;    // Turn off output compare peripheral
-    OC3CONbits.ON = TRUE;    // Turn off output compare peripheral
-    #define ON 1
-#else
-    OC1CONbits.ON = TRUE;    // Turn off output compare peripheral
-    OC2CONbits.ON = TRUE;    // Turn off output compare peripheral
-    OC3CONbits.ON = TRUE;    // Turn off output compare peripheral
-#endif
     OC1CONbits.SIDL = 0; // Continue operation in Idle mode
     OC2CONbits.SIDL = 0; // Continue operation in Idle mode
     OC3CONbits.SIDL = 0; // Continue operation in Idle mode
@@ -172,6 +161,40 @@ void InitPWM(void)
     
     TMR_ResetTimer2();
     TMR_InterruptTimer2(ON);
+}
+
+/******************************************************************************/
+/* PWM_Module
+ *
+ * This function controls the PWM pins.
+/******************************************************************************/
+unsigned char PWM_Module(unsigned char state)
+{
+    unsigned char status; 
+    
+#undef ON
+    
+    status = OC1CONbits.ON && OC2CONbits.ON && OC2CONbits.ON;
+    if(state)
+    {  
+        if(!status)
+        {
+            OC1CONbits.ON = TRUE;     // Output Compare peripheral is enabled
+            OC2CONbits.ON = TRUE;     // Output Compare peripheral is enabled
+            OC3CONbits.ON = TRUE;     // Output Compare peripheral is enabled
+        }
+    }
+    else
+    {
+        if(status)
+        {
+            OC1CONbits.ON = FALSE;    // Turn off output compare peripheral
+            OC2CONbits.ON = FALSE;    // Turn off output compare peripheral
+            OC3CONbits.ON = FALSE;    // Turn off output compare peripheral
+        }
+    }
+#define ON 1
+    return status;
 }
 
 /******************************************************************************/
@@ -215,34 +238,46 @@ void PWM_SetAction(unsigned char type, unsigned short speed)
 void PWM_SetColor(unsigned short Color, unsigned char type, unsigned short speed)
 {
     TMR_EnableTimer4(OFF);
-    switch (Color)
+    if(Color != NONE)
     {
-        case RED:
-            PWM_SetRGB(32,0,0);
-            break;
-        case GREEN:
-            PWM_SetRGB(0,16,0);
-            break;
-        case BLUE:
-            PWM_SetRGB(0,0,8);
-            break;
-        case PURPLE:
-            PWM_SetRGB(32,0,8);
-            break;
-        case YELLOW:
-            PWM_SetRGB(16,16,0);
-            break;
-         case WHITE:
-            PWM_SetRGB(16,16,8);
-            break;
-        case TURQUOISE:
-            PWM_SetRGB(0,16,8);
-            break;
-        default:
-            PWM_SetRGB(0,0,0);
-            break;
+        TMR_EnableTimer2(ON);
+        PWM_Module(ON);
+        
+        switch (Color)
+        {
+            case RED:
+                PWM_SetRGB(32,0,0);
+                break;
+            case GREEN:
+                PWM_SetRGB(0,16,0);
+                break;
+            case BLUE:
+                PWM_SetRGB(0,0,8);
+                break;
+            case PURPLE:
+                PWM_SetRGB(32,0,8);
+                break;
+            case YELLOW:
+                PWM_SetRGB(16,16,0);
+                break;
+             case WHITE:
+                PWM_SetRGB(16,16,8);
+                break;
+            case TURQUOISE:
+                PWM_SetRGB(0,16,8);
+                break;
+            default:
+                PWM_SetRGB(0,0,0);
+                break;
+        }
+        PWM_SetAction(type, speed);
     }
-    PWM_SetAction(type, speed);
+    else
+    {
+        TMR_EnableTimer2(OFF);
+        TMR_ResetTimer2();
+        PWM_Module(OFF);
+    }
 }
 
 /*-----------------------------------------------------------------------------/

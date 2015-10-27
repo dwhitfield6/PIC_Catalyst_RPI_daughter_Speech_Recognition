@@ -23,8 +23,8 @@
 /******************************************************************************/
 /* Firmware Version
 /******************************************************************************/
-#define CPU_VERSION    "63"
-#define CPU_REVISION   "00"
+#define CPU_VERSION    "10"
+#define CPU_REVISION   "0"
 #define CPU_ALPHA      ""                 /* use "" for no alpha.  */ 
 #define CPU_BRANCH     "DW0a"             /* use "" for no branch. */
 
@@ -35,6 +35,16 @@
  * 1. Catalyst_PCB_revA             (use configuration "PCB_A__pic32MX350F128L")
 /******************************************************************************/
 #define Catalyst_PCB_revA
+
+/******************************************************************************/
+/* PCB board extentions
+ *
+ * This is used if there is an extender board being used.
+ * 
+ * This code is used with boards:
+ * 1. Catalyst_Expander_IR_RF_revA             
+/******************************************************************************/
+#define Catalyst_Expander_IR_RF_revA
 
 /******************************************************************************/
 /* PCB board Serial Number

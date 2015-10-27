@@ -85,6 +85,11 @@ void Init_App(void)
     ANSELF = 0;
     ANSELG = 0;
     
+    /* initialize pins */
+    PWR_Volts5(ON);     // turn on the 5 volt rail
+    PWR_Charge(TRUE);   // charge the capacitor
+    PWR_RASP(ON);       // power on the raspberry pi
+    
     /*~~~~~~~~~~~~~ Red LED ~~~~~~~~~~~~~~~~~*/
     MSC_RedLEDOFF();
     RedLEDTris          = OUTPUT;
@@ -98,16 +103,13 @@ void Init_App(void)
     RGB_BlueLEDTris     = OUTPUT;
     
     /*~~~~~~~~~~~~~ SuperCap ~~~~~~~~~~~~~~~~~*/
-    PWR_Charge(TRUE);   // charge the capacitor
     ChargeCapTris       = OUTPUT;
     
     /*~~~~~~~~~~~~~ DCDC ~~~~~~~~~~~~~~~~~*/
-    PWR_Volts5(ON);
     InhibitTris         = OUTPUT;
     
     /*~~~~~~~~~~~~~ Raspberry pi ~~~~~~~~~~~~~~~~~*/
     /* Raspberry pi rail */
-    PWR_RASP(ON);
     RASP_ONTris         = OUTPUT;
     RASP_ON2Tris        = INPUT;
     
@@ -130,7 +132,7 @@ void Init_App(void)
     RASP_SPI_CS3Tris    = INPUT;
     RASP_SPI_ConfiguredTris = INPUT;
     RDI_RequestRaspberryPiSPI(OFF);
-    RASP_Slave_Need_ClockingTris = OUTPUT;
+    RASP_Slave_Need_ClockingTris = INPUT;
             
             
     /*~~~~~~~~~~~~~ Voltages rails for ADC ~~~~~~~~~~~~~~~~~*/
@@ -220,32 +222,14 @@ void Init_App(void)
 void Init_System(void)
 {
     INTCONbits.MVEC = TRUE; // Multi-vectored interrupts
-    Init_Watchdog();
-    if(SYS_CheckWatchdogReset())
-    {
-        Nop();
-    }
-    else
-    {
-        MSC_RedLEDOFF();
-        SYS_CheckReset();
-    }
     if(PMD6bits.REFOMD != ON)
     {
         /* put in low power mode if not already */
         InitLowPower();
     }
-    InitComparator();
-    EXC_ClearFaults();
-    InitADC();
     InitTIMERS();
     InitPWM();
     InitUART();
-    InitSPI();
-    InitRDI();
-    InitRTCC();
-    InitExtFlash();
-    InitI2C();
     InitException();
     InitDMA();
     SYS_Interrupts(ON);

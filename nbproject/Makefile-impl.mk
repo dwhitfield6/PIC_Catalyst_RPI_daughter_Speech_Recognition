@@ -31,7 +31,7 @@ DEFAULTCONF=Catalyst_revA_PIC32MX350f128L
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Catalyst_revA_PIC32MX350f128L 
+ALLCONFS=Catalyst_revA_PIC32MX350f128L Catalyst_revA_PIC32MX370f512L 
 
 
 # build
@@ -46,12 +46,14 @@ ALLCONFS=Catalyst_revA_PIC32MX350f128L
 # clobber
 .clobber-impl: .clobber-pre .depcheck-impl
 	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=Catalyst_revA_PIC32MX350f128L clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=Catalyst_revA_PIC32MX370f512L clean
 
 
 
 # all
 .all-impl: .all-pre .depcheck-impl
 	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=Catalyst_revA_PIC32MX350f128L build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=Catalyst_revA_PIC32MX370f512L build
 
 
 

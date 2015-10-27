@@ -92,6 +92,7 @@ extern unsigned char PWM_Place;
 /* Function prototypes                                                        */
 /******************************************************************************/
 void InitPWM(void);
+unsigned char PWM_Module(unsigned char state);
 inline void PWM_SetRed(unsigned short Value);
 inline void PWM_SetGreen(unsigned short Value);
 inline void PWM_SetBlue(unsigned short Value);

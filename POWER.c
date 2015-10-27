@@ -296,22 +296,6 @@ void InitComparator(void)
     PWR_ExternalInterrupt(COMP_VIN_Warn_INT,ON);
     PWR_ExternalInterrupt(COMP_VCAP_Warn1_INT,ON);
     PWR_ExternalInterrupt(COMP_VCAP_Warn3_INT,ON);
-    if(RailStatus.Warn4_1)
-    {
-        if(!RailStatus.WarnVIN)
-        {
-            /* 
-             * charge the cap since the rail is below 4.1 volts and we have
-             *  power applied 
-             */
-            PWR_Charge(TRUE);
-        }
-    }
-    else if(RailStatus.WarnPOT == 0)
-    {
-        /* discharge the cap since the rail is above 4.7 volts */
-        //PWR_Charge(FALSE);
-    }
 }
     
 /******************************************************************************/
