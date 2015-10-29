@@ -276,7 +276,7 @@ void InitLowPower(void)
 }
 
 /******************************************************************************/
-/* InitI2C
+/* InitComparator
  *
  * The function initializes the external comparator for monitoring voltage
  *  rail extremes.

@@ -121,11 +121,16 @@
 #define MSC_RGBBlueLEDTOGGLE()  (LATD ^= RGB_BlueLED)
 
 /******************************************************************************/
+/* User Global Variable Declaration                                           */
+/******************************************************************************/
+extern unsigned char PhraseSearchFind;
+
+/******************************************************************************/
 /* Function prototypes                                                        */
 /******************************************************************************/
 inline void MSC_Relay(unsigned char state);
 void MSC_DelayUS(long US);
-void MSC_DelayNOP(unsigned char NOPs);
+void MSC_DelayNOP(unsigned long NOPs);
 unsigned char IsLetter(unsigned char data);
 unsigned char MSC_IsNumber(unsigned char data);
 unsigned char MSC_IsCharacter(unsigned char data);
@@ -144,5 +149,7 @@ void MSC_LowercaseChar(unsigned char* Input);
 unsigned short MSC_HEXtoBCD(unsigned short input);
 unsigned short MSC_BCDtoHEX(unsigned short input);
 unsigned long MSC_Endian(unsigned long number, unsigned char bits, unsigned char style);
+unsigned long MSC_ReverseLong(unsigned long This);
+unsigned char MSC_StreamingPhraseSearch(unsigned char data,unsigned char* phrase);
 
 #endif	/* MISC_H */

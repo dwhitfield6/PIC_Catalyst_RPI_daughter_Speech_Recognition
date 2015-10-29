@@ -1,9 +1,13 @@
 build/Catalyst_revA_PIC32MX350f128L/production/main.o:  \
 main.c  \
-SYSTEM.h  \
- USER.h  \
-MISC.h  \
 ADC.h  \
-SPI.h  \
+ USER.h  \
+CMD.h  \
+EXPAND_RF.h  \
+EXPAND_IR.h  \
+MISC.h  \
+SYSTEM.h  \
+PWM.h  \
 RTCC.h  \
-PWM.h 
+SPI.h  \
+ UART.h 

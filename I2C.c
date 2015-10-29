@@ -232,7 +232,7 @@ void I2C_RASP_DRV_CTP(void)
     for(i=0;i<20;i++)
     {
         LATG ^= I2C_RASP_DRV_Clock;
-        MSC_DelayUS(10);
+        MSC_DelayNOP(40);
     }
     I2C_RASP_DRV_ClockTris  = INPUT;
     if(status)
@@ -255,7 +255,7 @@ void I2C_RASP_GEN_CTP(void)
     for(i=0;i<20;i++)
     {
         LATA ^= I2C_RASP_GEN_Clock;
-        MSC_DelayUS(10);
+        MSC_DelayNOP(40);
     }
     I2C_RASP_GEN_ClockTris  = INPUT;
     if(status)
@@ -491,7 +491,7 @@ unsigned char I2C_RASP_DRV_Write(unsigned char data)
     {
         return FAIL;
     }
-    MSC_DelayUS(50);
+    MSC_DelayNOP(200);
     return PASS;
 }
 
@@ -530,7 +530,7 @@ unsigned char I2C_RASP_GEN_Write(unsigned char data)
     {
         return FAIL;
     }
-    MSC_DelayUS(50);
+    MSC_DelayNOP(200);
     return PASS;
 }
 
@@ -613,7 +613,7 @@ unsigned char I2C_RASP_DRV_EEPROMWriteByte(unsigned short DataAddress, unsigned 
         return FAIL;
     }
     I2C_RASP_DRV_Stop();
-    MSC_DelayUS(10000);
+    MSC_DelayNOP(40000);
     return PASS;
 }
 
@@ -646,7 +646,7 @@ unsigned char I2C_RASP_GEN_EEPROMWriteByte(unsigned short DataAddress, unsigned 
         return FAIL;
     }
     I2C_RASP_GEN_Stop();
-    MSC_DelayUS(10000);
+    MSC_DelayNOP(40000);
     return PASS;
 }
 
@@ -690,7 +690,7 @@ unsigned char I2C_RASP_DRV_EEPROMReadByte(unsigned short DataAddress, unsigned c
     }
     I2C_RASP_DRV_Ack(NACK);
     I2C_RASP_DRV_Stop();
-    MSC_DelayUS(100);
+    MSC_DelayNOP(400);
     return PASS;
 }
 
@@ -734,7 +734,7 @@ unsigned char I2C_RASP_GEN_EEPROMReadByte(unsigned short DataAddress, unsigned c
     }
     I2C_RASP_GEN_Ack(NACK);
     I2C_RASP_GEN_Stop();
-    MSC_DelayUS(100);
+    MSC_DelayNOP(400);
     return PASS;
 }
 

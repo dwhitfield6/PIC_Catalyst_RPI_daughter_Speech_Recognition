@@ -96,7 +96,8 @@ typedef struct __attribute__((packed)) onfi
  * This defines the size of the flash buffer which has to be greater than the
  *  page size.
 /******************************************************************************/
-#define FLASH_BUFFER_SIZE   2048
+//#define FLASH_BUFFER_SIZE   2048
+#define FLASH_BUFFER_SIZE   1 // only used to give us more RAM
 
 /******************************************************************************/
 /* FLASH_BUFFER_PAGES

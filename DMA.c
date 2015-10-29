@@ -146,7 +146,7 @@ inline void DMA_TransferCompleteWait(unsigned char channel)
 {
     while(!DMA_TransferComplete(channel))
     {
-        MSC_DelayUS(100);
+        MSC_DelayNOP(500);
     }
 }
 

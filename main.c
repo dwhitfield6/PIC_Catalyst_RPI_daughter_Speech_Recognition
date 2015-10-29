@@ -6,10 +6,12 @@
  * Date         Revision    Comments
  * MM/DD/YY
  * --------     ---------   ----------------------------------------------------
- * 10/22/15     10.0_DW0b   Fixed bug that always made the system a SPI Master.
+ * 10/29/15     10.0_DW0b   Fixed bug that always made the system a SPI Master.
  *                          Added disable for PWM function so it turns off the
  *                            RGB during sleep.
- *                          Added template for expander card to do IR/RF
+ *                          Added template for expander card to do IR/RF.
+ *                          Added IR functionality.
+ *                          Added phrase searching for the pi UART parsing.
  * 10/22/15     10.0_DW0a   Initial project make ported from 
  *                            "Catalyst_RPI_daughter" tag '9.0_DW0a'.
  * 10/02/15     1.0_DW0a    Initial project make.
@@ -62,13 +64,17 @@
 #include <stdio.h>         
 #include <string.h>
 
-#include "SYSTEM.h"
-#include "USER.h"
-#include "MISC.h"
 #include "ADC.h"
-#include "SPI.h"
-#include "RTCC.h"
+#include "CMD.h"
+#include "EXPAND_RF.h"
+#include "EXPAND_IR.h"
+#include "MISC.h"
 #include "PWM.h"
+#include "RTCC.h"
+#include "SPI.h"
+#include "SYSTEM.h"
+#include "UART.h"
+#include "USER.h"
 
 /******************************************************************************/
 /* Defines                                                                    */
@@ -77,7 +83,7 @@
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
 /******************************************************************************/  
-    
+
 /******************************************************************************/
 /* Main Program                                                               */
 /******************************************************************************/
@@ -85,7 +91,8 @@
 short main (void)
 {
     unsigned long i;
- 
+    unsigned char index = 0;
+    
     /* Initialize */
     SYS_Watchdog(OFF);
     SYS_ConfigureOscillator();
@@ -102,9 +109,14 @@ short main (void)
     /* turn off the LED  */
     PWM_SetColor(NOTHING, NOTHING,NOTHING);
  
+    UART_RS232_FemalePrintBanner();
     while(1)
     {
-
+        if(PhraseSearchFind == TRUE)
+        {
+            CMD_Match(RX1_Buffer, COMMANDS, &index);
+            PhraseSearchFind = FALSE;
+        }
     }
 }
 /*-----------------------------------------------------------------------------/

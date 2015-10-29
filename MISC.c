@@ -32,7 +32,13 @@
 
 #include "MISC.h"
 #include "SYSTEM.h"
+#include "TIMERS.h"
 #include "USER.h"
+
+/******************************************************************************/
+/* User Global Variable Declaration                                           */
+/******************************************************************************/
+unsigned char PhraseSearchFind = FALSE;
 
 /******************************************************************************/
 /* Inline Functions                                                           */
@@ -68,12 +74,31 @@ inline void MSC_Relay(unsigned char state)
 /******************************************************************************/
 void MSC_DelayUS(long US)
 {
-    long i;
-
-    for(i=0; i<US; i++)
+    double prescalerD;
+    unsigned long prescalerL;
+    
+    prescalerD = MSC_Round(((double)PBCLK * (double) US) / (256.0 * 1000000.0));
+    prescalerL = (unsigned long) prescalerD;
+    
+    while(prescalerL > MAX_USHORT)
     {
-        Nop(); Nop(); Nop(); Nop();
+        Timer1_Timeout = FALSE;
+        TMR_ResetTimer1();
+        TMR_SetTimer1(MAX_USHORT);
+        IFS0bits.T1IF = 0; // Clear Timer 1 interrupt flag
+        TMR_InterruptTimer1(ON);
+        TMR_EnableTimer1(ON);
+        while(!Timer1_Timeout); 
+        prescalerL -= MAX_USHORT;
     }
+    
+    Timer1_Timeout = FALSE;
+    TMR_ResetTimer1();
+    TMR_SetTimer1(prescalerL);
+    IFS0bits.T1IF = 0; // Clear Timer 1 interrupt flag
+    TMR_InterruptTimer1(ON);
+    TMR_EnableTimer1(ON);
+    while(!Timer1_Timeout);   
 }
 
 /******************************************************************************/
@@ -81,7 +106,7 @@ void MSC_DelayUS(long US)
  *
  * The function waists the number of cycles passed into the function.
 /******************************************************************************/
-void MSC_DelayNOP(unsigned char NOPs)
+void MSC_DelayNOP(unsigned long NOPs)
 {
     unsigned char i;
     for(i=0; i<NOPs; i++)
@@ -445,8 +470,81 @@ unsigned long MSC_Endian(unsigned long number, unsigned char bits, unsigned char
             return (temp2 | (temp1 << 8) | (temp4 << 16) | (temp3 << 24));
         }
     }
+}
 
+/******************************************************************************/
+/* MSC_ReverseLong
+ *
+ * The function reads the value of 'This' and returns the reverse of the data.
+/******************************************************************************/
+unsigned long MSC_ReverseLong(unsigned long This)
+{
+    unsigned long temp=0;
 
+    temp += (This & 0x00000001) << 31;
+    temp += (This & 0x00000002) << 29;
+    temp += (This & 0x00000004) << 27;
+    temp += (This & 0x00000008) << 25;
+    temp += (This & 0x00000010) << 23;
+    temp += (This & 0x00000020) << 21;
+    temp += (This & 0x00000040) << 19;
+    temp += (This & 0x00000080) << 17;
+    temp += (This & 0x00000100) << 15;
+    temp += (This & 0x00000200) << 13;
+    temp += (This & 0x00000400) << 11;
+    temp += (This & 0x00000800) << 9;
+    temp += (This & 0x00001000) << 7;
+    temp += (This & 0x00002000) << 5;
+    temp += (This & 0x00004000) << 3;
+    temp += (This & 0x00008000) << 1;
+    temp += (This & 0x00010000) >> 1;
+    temp += (This & 0x00020000) >> 3;
+    temp += (This & 0x00040000) >> 5;
+    temp += (This & 0x00080000) >> 7;
+    temp += (This & 0x00100000) >> 9;
+    temp += (This & 0x00200000) >> 11;
+    temp += (This & 0x00400000) >> 13;
+    temp += (This & 0x00800000) >> 15;
+    temp += (This & 0x01000000) >> 17;
+    temp += (This & 0x02000000) >> 19;
+    temp += (This & 0x04000000) >> 21;
+    temp += (This & 0x08000000) >> 23;
+    temp += (This & 0x10000000) >> 25;
+    temp += (This & 0x20000000) >> 27;
+    temp += (This & 0x40000000) >> 29;
+    temp += (This & 0x80000000) >> 31;
+
+    return temp;
+}
+
+/******************************************************************************/
+/* MSC_StreamingPhraseSearch
+ *
+ * The function checks for a phrase live when data is streaming.
+/******************************************************************************/
+unsigned char MSC_StreamingPhraseSearch(unsigned char data,unsigned char* phrase)
+{
+    static unsigned long index =0;
+    
+    if(phrase[index] == 0)
+    {
+        /* start over if we are already pointing at a null */
+        index = 0;
+    }
+    
+    if(data == phrase[index])
+    {
+        index++;
+        if(phrase[index] == 0)
+        {
+            PhraseSearchFind = TRUE;
+        }
+    }
+    else
+    {
+        /* start over since the data does not match the phrase */
+        index = 0;
+    }
 }
 
 /*-----------------------------------------------------------------------------/

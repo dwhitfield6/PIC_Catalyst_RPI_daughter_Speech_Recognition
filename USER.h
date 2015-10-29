@@ -29,12 +29,28 @@
 #define CPU_BRANCH     "DW0a"             /* use "" for no branch. */
 
 /******************************************************************************/
+/* PROJECT_NAME
+ * 
+ * This is the name of the project.
+ * 
+/******************************************************************************/
+#define PROJECT_NAME "Catalyst Speech Recognition Home Automation"
+
+/******************************************************************************/
 /* PCB board
  *
  * This code is used with boards:
  * 1. Catalyst_PCB_revA             (use configuration "PCB_A__pic32MX350F128L")
 /******************************************************************************/
 #define Catalyst_PCB_revA
+
+/******************************************************************************/
+/* HIGH_POWER_LDO
+ *
+ * This is to be defined if we have the MCP1825 populated on the board.
+ * 
+/******************************************************************************/
+//#define HIGH_POWER_LDO
 
 /******************************************************************************/
 /* PCB board extentions
@@ -90,14 +106,17 @@
 /* Connected to the RGB red LED indicator */
 #define RGB_RedLEDTris	TRISDbits.TRISD2
 #define RGB_RedLED 0x00000004 //RD2 used as OC3
+#define RGB_RedLED_Module 0b1011 // RPnR Value for OC3
 
 /* Connected to the RGB Green LED indicator */
 #define RGB_GreenLEDTris	TRISBbits.TRISB6
 #define RGB_GreenLED 0x00000040 //RB6 used as OC2
+#define RGB_GreenLED_Module 0b1011 // RPnR Value for OC2
 
 /* Connected to the RGB Blue LED indicator */
 #define RGB_BlueLEDTris	TRISDbits.TRISD1
 #define RGB_BlueLED 0x00000002 //RD1 used as OC1
+#define RGB_BlueLED_Module 0b1100 // RPnR Value for OC1
 
 /************* Super Cap *************/
 /* Connected to the power switch that charges the super capacitor */
@@ -139,9 +158,18 @@
 #define RASP_SPI_MOSI 0x00000400        // RB10 used as SDO2
 #define RASP_SPI_MOSI_Pin 0b0110        // SDO2 is pin RPB10 (master mode)
 
+#ifndef Catalyst_Expander_IR_RF_revA
+/* shared with expander. this is a board workaround */
 #define RASP_SPI_MOSI2Tris	TRISGbits.TRISG0
-#define RASP_SPI_MOSI2 0x00000001        // RB10 used as SDO2
+#define RASP_SPI_MOSI2 0x00000001        // RG0 used as SDO2
 #define RASP_SPI_MOSI_Module 0b1100     // SDI2 is pin RPG0 (slave mode)
+
+#define RASP_SPI_MOSI2_1Tris	TRISAbits.TRISA6
+#define RASP_SPI_MOSI2_1 0x00000040  // RA6
+
+#define RASP_SPI_MOSI2_2Tris	TRISGbits.TRISG1
+#define RASP_SPI_MOSI2_2 0x00000002  // RG1
+#endif
 
 /* Connected to SPI MISO on Rasberry pi */
 #define RASP_SPI_MISOTris	TRISDbits.TRISD15
@@ -172,6 +200,10 @@
 /* Connected Raspberry pi GPIO 18 used to indicate that the SPI bus is configured */
 #define RASP_SPI_ConfiguredTris	TRISBbits.TRISB11
 #define RASP_SPI_Configured 0x00000800     // RB11
+
+/* Connected Raspberry pi GPIO 5 */
+#define RASP_GPIO5Tris	TRISDbits.TRISD12
+#define RASP_GPIO5 0x00001000     // RD12
 
 /************* Voltage rails for ADC read *************/
 /* Connected to the voltage divider to read the 5 volt rail */
@@ -285,18 +317,6 @@
 #define Relay2Tris	TRISFbits.TRISF13
 #define Relay2 0x00002000  // RF13
 
-/************* Expander *************/
-/* Connected to the Expansion header pin 6 */
-#define Expand1_1Tris	TRISAbits.TRISA6
-#define Expand1_1 0x00000040  // RA6
-
-#define Expand1_2Tris	TRISGbits.TRISG1
-#define Expand1_2 0x00000002  // RG1
-
-/* Connected to the Expansion header pin 5 */
-#define Expand2Tris	TRISFbits.TRISF4
-#define Expand2 0x00000002  // RF4
-
 /************* External Flash IC *************/
 /* Connected to the external Flash IC IO pin 0 */
 #define ExtFlash_IO_0Tris	TRISEbits.TRISE0
@@ -379,6 +399,9 @@
 #define I2C_RASP_GEN_DataTris	TRISAbits.TRISA3
 #define I2C_RASP_GEN_Data 0x00000008  // RA3
 
+#define I2C_RASP_GEN_Data1Tris	TRISAbits.TRISA4
+#define I2C_RASP_GEN_Data1 0x00000010  // RA4
+
 /******* Comparator IC for monitoring voltage extremes on the rails *******/
 /* Connected to comparator VIN_WARN warn */
 #define COMP_VIN_WarnTris	TRISBbits.TRISB8
@@ -402,6 +425,51 @@
 #define COMP_VCAP_Warn3 0x00000008  // RF3 used as INT1
 #define COMP_VCAP_Warn3_INT 1
 #define COMP_VCAP_Warn3_Pin 0b1000        // INT1 is pin RPF3
+
+#ifdef Catalyst_Expander_IR_RF_revA
+/* using expander card */
+/******* IR LED in Expander module (EXPAND1) *******/
+/* Connected N-channel mosfet that controls the IR LED */
+#define IR_LED_Tris	TRISAbits.TRISA6
+#define IR_LED 0x00000040  // RA6
+
+#define IR_LED1_Tris	TRISGbits.TRISG0
+#define IR_LED1 0x00000001  // RG0 used as 0C4
+#define IR_LED1_Module 0b1011 // RPnR Value for OC4
+
+#define IR_LED2_Tris	TRISGbits.TRISG1
+#define IR_LED2 0x00000002  // RG1
+
+/******* RF transmitter in Expander module (EXPAND2) *******/
+/* Connected N-channel mosfet that controls the IR LED */
+#define RF_TRANSMIT_Tris	TRISFbits.TRISF4
+#define RF_TRANSMIT 0x00000010  // RF4
+#endif
+
+/******* High power LDO shutdown pin *******/
+/* Connected to shutdown pin of MCP1825*/
+#define LDO2_STWN_Tris	TRISGbits.TRISG15
+#define LDO2_STWN 0x00008000  // RG15
+
+/***************** RTCC ****************/
+/* RTCC out pin connected to RA15 for interrupt wakeup */
+#define RTCC_OUT_Tris	TRISDbits.TRISD8
+#define RTCC_OUT 0x00000100  // RD8
+
+/* Interrupt input connected to RTCC out */
+#define RTCC_INT_Tris	TRISAbits.TRISA15
+#define RTCC_INT 0x00008000  // RA15
+
+/***************** Debug UART ****************/
+/* Connected to Debug UART TX */
+#define DEBUG_UART_TXTris	TRISFbits.TRISF1
+#define DEBUG_UART_TX 0x00000002        // RF1 used as U3TX
+#define DEBUG_UART_TX_Module 0b0001     // RPnR Value for U3TX
+
+/* Connected to UART RX */
+#define DEBUG_UART_RXTris	TRISFbits.TRISF0
+#define DEBUG_UART_RX 0x00000001        // RF0 used as U3RX
+#define DEBUG_UART_RX_Pin 0b0100        // U3RX is pin RPF0
 
 /******************************************************************************/
 /* Version variables                                                          */

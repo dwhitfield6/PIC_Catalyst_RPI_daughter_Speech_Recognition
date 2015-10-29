@@ -31,7 +31,6 @@
 #include "MISC.h"
 #include "POWER.h"
 #include "PWM.h"
-#include "RDI.h"
 #include "RTCC.h"
 #include "SPI.h"
 #include "SYSTEM.h"
@@ -124,15 +123,19 @@ void Init_App(void)
     
     /* Raspberry pi SPI */
     RASP_SPI_MOSITris   = INPUT;
+#ifndef Catalyst_Expander_IR_RF_revA
     RASP_SPI_MOSI2Tris  = INPUT;
+    RASP_SPI_MOSI2_1Tris    = INPUT;
+    RASP_SPI_MOSI2_2Tris    = INPUT;
+#endif
     RASP_SPI_MISOTris   = INPUT;
     RASP_SPI_CLKTris    = INPUT;
     RASP_SPI_CSTris     = INPUT;
     RASP_SPI_CS2Tris    = INPUT;
     RASP_SPI_CS3Tris    = INPUT;
     RASP_SPI_ConfiguredTris = INPUT;
-    RDI_RequestRaspberryPiSPI(OFF);
     RASP_Slave_Need_ClockingTris = INPUT;
+    RASP_GPIO5Tris      = INPUT;
             
             
     /*~~~~~~~~~~~~~ Voltages rails for ADC ~~~~~~~~~~~~~~~~~*/
@@ -173,11 +176,6 @@ void Init_App(void)
     RelayTris           = OUTPUT;
     Relay2Tris          = INPUT;
     
-    /*~~~~~~~~~~~~~ Expansion header ~~~~~~~~~~~~~~~~~*/
-    Expand1_1Tris       = INPUT;
-    Expand1_2Tris       = INPUT;
-    Expand2Tris         = INPUT;
-    
     /*~~~~~~~~~~~~~ External Flash IC ~~~~~~~~~~~~~~~~~*/
     FLH_EXT_ChipSelect(OFF);
     ExtFlash_IO_0Tris   = INPUT;
@@ -206,12 +204,33 @@ void Init_App(void)
     I2C_RASP_DRV_DataTris   = INPUT;
     I2C_RASP_GEN_ClockTris  = INPUT;
     I2C_RASP_GEN_DataTris   = INPUT;
+    I2C_RASP_GEN_Data1Tris  = INPUT;
     
     /*~~~~~~~~~~~~~ Comparator ~~~~~~~~~~~~~~~~~*/
     COMP_VIN_WarnTris   = INPUT;
     COMP_VCAP_Warn1Tris = INPUT;
     COMP_VCAP_Warn2Tris = INPUT;
     COMP_VCAP_Warn3Tris = INPUT;
+    
+#ifdef Catalyst_Expander_IR_RF_revA
+    /*~~~~~~~~~~~~~ IR/RF expansion header ~~~~~~~~~~~~~~~~~*/
+    IR_LEDUse(OFF);
+    IR_LED_Tris         = INPUT;
+    IR_LED1_Tris        = OUTPUT;
+    IR_LED2_Tris        = INPUT;
+    RF_TRANSMIT_Tris    = INPUT;
+#endif
+
+    /*~~~~~~~~~~~~~ Optional High Power LDO ~~~~~~~~~~~~~~~~~*/
+    RTCC_OUT_Tris       = OUTPUT;
+    
+    /*~~~~~~~~~~~~~ RTCC ~~~~~~~~~~~~~~~~~*/
+    RTCC_OUT_Tris       = OUTPUT;
+    RTCC_INT_Tris       = INPUT;
+    
+    /*~~~~~~~~~~~~~ Debug UART ~~~~~~~~~~~~~~~~~*/
+    DEBUG_UART_TXTris   = OUTPUT;
+    DEBUG_UART_RXTris   = INPUT;
 }
 
 /******************************************************************************/
@@ -232,6 +251,10 @@ void Init_System(void)
     InitUART();
     InitException();
     InitDMA();
+#ifdef Catalyst_Expander_IR_RF_revA
+    InitIR();
+    InitRF();
+#endif
     SYS_Interrupts(ON);
 }
 

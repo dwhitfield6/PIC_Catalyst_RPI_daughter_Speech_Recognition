@@ -6,14 +6,14 @@
  * Date         Revision    Comments
  * MM/DD/YY
  * --------     ---------   ----------------------------------------------------
- * 09/12/15     1.0_DW0a    Initial project make.
+ * 10/29/15     10.0_DW0b   Initial project make.
 /******************************************************************************/
 
 /******************************************************************************/
 /* Files to Include                                                           */
 /******************************************************************************/
-#ifndef RDI_H
-#define	RDI_H
+#ifndef CMD_H
+#define	CMD_H
 
 #include <xc.h>         /* XC8 General Include File */
 
@@ -23,57 +23,42 @@
 #include "USER.h"
 
 /******************************************************************************/
-/* Banner_RECEIVE_SIZE
- *
- * This is the number of maximum number of characters that make up an RDI
- *  instrument banner.
+/* Structures                                                                 */
 /******************************************************************************/
-#define Banner_RECEIVE_SIZE 250
+typedef void (*pFunction)(void); // pointer to a function
 
+typedef struct commands
+{
+	unsigned char command[80]; // command phrase to check for
+	pFunction Function;        // function to call when phrase is found
+    unsigned long* Value;      // value to pass into the function
+    unsigned long index;       // place in string where match function is currently looking
+}COMMANDTYPE;
+    
 /******************************************************************************/
-/* Banner_TIMEOUT
+/* NUMBER_OF_COMMANDS
  *
- * This is the number of milliseconds to wait between a break and a banner to
- *  be printed.
+ * This is the number of commands.
 /******************************************************************************/
-#define Banner_TIMEOUT 2000
-
-/******************************************************************************/
-/* RDI catalyst compatible products
- *
- * This is the RDI products that work with the catalyst.
-/******************************************************************************/
-#define PROD_WORKHORSE_HADCP  1
-
-/******************************************************************************/
-/* Catalyst strings
- *
- * This is the banner extention string for a product banner
-/******************************************************************************/
-extern const unsigned char Workhorse_H_ADCP[];
-extern const unsigned char Catalyst_PIC_only_String[];
-extern const unsigned char Catalyst_String[];
+#define NUMBER_OF_COMMANDS 7
 
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
-extern unsigned short RDI_product;
-extern unsigned short Banner_Buffer_Place;
-extern unsigned char Banner_Buffer[Banner_RECEIVE_SIZE];
-extern unsigned char GetProduct;
-extern volatile unsigned char BannerFinished;
-extern volatile unsigned char Banner_Correct_place;
+extern const COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS];
+extern unsigned long* CommandDataPointer;
+
+/******************************************************************************/
+/* Defines                                                                    */
+/******************************************************************************/
+
+/******************************************************************************/
+/* Macro Functions                                                            */
+/******************************************************************************/
 
 /******************************************************************************/
 /* Function prototypes                                                        */
 /******************************************************************************/
-void InitRDI(void);
-void RDI_GetProduct(void);
-void RDI_ClearProduct(void);
-void RDI_PrintBanner(void);
-void RDI_PrintBannerExtention(void);
-unsigned char RDI_RequestRaspberryPiSPI(unsigned char state);
-unsigned char RDI_SendToRaspberry(unsigned long address, unsigned short amount);
-void RDI_SPI_TransferToRaspberry(unsigned short amount);
+unsigned char CMD_Match(unsigned char* buffer, COMMANDTYPE* commands, unsigned char* Match_Index);
 
-#endif	/* RDI_H */
+#endif	/* CMD_H */

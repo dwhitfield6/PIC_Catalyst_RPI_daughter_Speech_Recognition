@@ -80,10 +80,10 @@
 #include <stdbool.h>       /* For true/false definition */
 #include <sys/attribs.h>     /* For __ISR definition */
 
+#include "EXPAND_IR.h"
 #include "POWER.h"
 #include "PWM.h"
 #include "UART.h"
-#include "RDI.h"
 #include "RTCC.h"
 #include "TIMERS.h"
 #include "I2C.h"
@@ -159,6 +159,17 @@ void __ISR(_EXTERNAL_3_VECTOR , IPL7AUTO) INT3_IntHandler (void)
 }
 
 /******************************************************************************/
+/* Timer 1 interrupt (Delay timer)
+/******************************************************************************/
+void __ISR(_TIMER_1_VECTOR , IPL7AUTO) TMR1_IntHandler (void)
+{
+    Timer1_Timeout = TRUE;
+    TMR_EnableTimer1(OFF);
+    TMR_InterruptTimer1(OFF);
+    IFS0bits.T1IF = 0; // Clear Timer 1 interrupt flag
+}
+
+/******************************************************************************/
 /* Timer 2 interrupt (PWM RGB LED)
 /******************************************************************************/
 void __ISR(_TIMER_2_VECTOR , IPL7AUTO) TMR2_IntHandler (void)
@@ -169,6 +180,25 @@ void __ISR(_TIMER_2_VECTOR , IPL7AUTO) TMR2_IntHandler (void)
     OC2RS = Green_Duty; // Write Duty Cycle value for next PWM cycle
     OC1RS = Blue_Duty; // Write Duty Cycle value for next PWM cycle
     IFS0bits.T2IF = 0; // Clear Timer 2 interrupt flag
+}
+
+/******************************************************************************/
+/* Timer 3 interrupt (PWM IR LED)
+/******************************************************************************/
+void __ISR(_TIMER_3_VECTOR , IPL7AUTO) TMR3_IntHandler (void)
+{
+    unsigned short temp;
+    
+    if(IR_state)
+    {
+        temp = IR_PWM50;
+    }
+    else
+    {
+        temp =0;
+    }
+    OC4RS = temp; // Write Duty Cycle value for next PWM cycle
+    IFS0bits.T3IF = 0; // Clear Timer 3 interrupt flag
 }
 
 /******************************************************************************/
@@ -212,15 +242,7 @@ void __ISR(_TIMER_4_VECTOR , IPL7AUTO) TMR4_IntHandler (void)
 void __ISR(_TIMER_5_VECTOR , IPL7AUTO) TMR5_IntHandler (void)
 {  
     static unsigned char sample = 0;
-
-    if(PWR_RASP_SPIReady())
-    {
-        SPI_ReceiverInterrupt(ON);
-    }
-    else
-    {
-        SPI_ReceiverInterrupt(OFF);
-    }
+    
     if(sample == 0)
     {
         /* set channel and start sampling */
@@ -320,7 +342,6 @@ void __ISR(_SPI_2_VECTOR , IPL7AUTO) SPI2_IntHandler (void)
         }
         else
         {
-            RDI_RequestRaspberryPiSPI(FALSE);
             SPI_TransmitterInterrupt(OFF);
             SPI_Transfering = FALSE;
         }
@@ -336,7 +357,7 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
 {
     unsigned char data;
     
-    if(IFS1bits.U1RXIF)
+    if(IFS1bits.U1RXIF && IEC1bits.U1RXIE)
     {
         /* receive interrupt */        
         if(U1STAbits.FERR)
@@ -366,15 +387,22 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
                     RX1_Buffer[RX1_Buffer_Place] = data;
                     RX1_Buffer_Place++;
                 }
-                else
+                UART_DebugSendChar(data);
+                /* check for a matching sequence to see if we should check the buffer for a phrase */
+                MSC_StreamingPhraseSearch(data,"check");
+                
+                if(UART_Debug_NewlineMode == TRUE)
                 {
-                    /* Overflow */
-                    UART_CleanReceive1();
-                }
+                    if(data == '\r')
+                    {
+                        UART_DebugSendChar('\n');
+                    }
+                }       
             }
         }
+        IFS1bits.U1RXIF = 0;
     }
-    if(IFS1bits.U1TXIF)
+    if(IFS1bits.U1TXIF && IEC1bits.U1TXIE)
     {
         if(TX1_Buffer_REMOVE_Place != TX1_Buffer_ADD_Place)
         {
@@ -389,9 +417,8 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
         {
             UART_TransmitterInterrupt1(OFF);
         }
+        IFS1bits.U1TXIF = 0;
     }
-    IFS1bits.U1RXIF = 0;
-    IFS1bits.U1TXIF = 0;
 }
 
 /******************************************************************************/
@@ -401,7 +428,7 @@ void __ISR(_UART_2_VECTOR , IPL7AUTO) UART2_IntHandler (void)
 {
     unsigned char data;
     
-    if(IFS1bits.U2RXIF)
+    if(IFS1bits.U2RXIF && IEC1bits.U2RXIE)
     {
         /* receive interrupt */        
         if(U2STAbits.FERR)
@@ -425,71 +452,16 @@ void __ISR(_UART_2_VECTOR , IPL7AUTO) UART2_IntHandler (void)
             while(U2STAbits.URXDA)
             {
                 /* receive buffer has data */
-                if(!GetProduct)
-                {
-                    data = U2RXREG;
-                    UART_RS232_FemaleSendChar(data);
-                    if(RX2_Buffer_Place < UART2_RECEIVE_SIZE)
-                    {
-                        RX2_Buffer[RX2_Buffer_Place] = data;
-                        RX2_Buffer_Place++;
-                    }
-                    else
-                    {
-                        /* Overflow */
-                        UART_CleanReceive2();
-                    }    
-                    if(UserSentBreak && RDI_product)
-                    {
-                        /* 
-                         * The user sent a break and we have a valid product
-                         *  so insert the extra catalyst message in the banner 
-                         */
-                        if(data == Workhorse_H_ADCP[Banner_Correct_place])
-                        {  
-                            Banner_Correct_place++;
-                            if(Workhorse_H_ADCP[Banner_Correct_place] == 0)
-                            {
-                                /* banner match for Workhorse HADCP */
-                                RDI_PrintBannerExtention();
-                                UserSentBreak = FALSE;
-                            }
-                        }   
-                    }                
-                }
-                else
-                {
-                    data = U2RXREG;
-                    if(Banner_Buffer_Place < Banner_RECEIVE_SIZE)
-                    {
-                        Banner_Buffer[Banner_Buffer_Place] = data;
-                        Banner_Buffer_Place++;
-                        if(data == Workhorse_H_ADCP[Banner_Correct_place])
-                        {  
-                            Banner_Correct_place++;
-                            if(Workhorse_H_ADCP[Banner_Correct_place] == 0)
-                            {
-                                RDI_product = PROD_WORKHORSE_HADCP;
-                            }
-                        }
-                        else
-                        {
-                            Banner_Correct_place = 0;
-                        }                        
-                    }
-                    if(data == '>')
-                    {
-                        BannerFinished = TRUE;
-                    }
-                }
+                data = U2RXREG;
             }
         }
+        IFS1bits.U2RXIF = 0;
     }
-    if(IFS1bits.U2TXIF)
+    if(IFS1bits.U2TXIF && IEC1bits.U2TXIE)
     {
         if(TX2_Buffer_REMOVE_Place != TX2_Buffer_ADD_Place)
         {
-            U2TXREG = TX2_Buffer[TX2_Buffer_REMOVE_Place];
+            U2TXREG = TX1_Buffer[TX2_Buffer_REMOVE_Place];
             TX2_Buffer_REMOVE_Place++;
             if(TX2_Buffer_REMOVE_Place >= UART2_TRANSMIT_SIZE)
             {
@@ -500,9 +472,71 @@ void __ISR(_UART_2_VECTOR , IPL7AUTO) UART2_IntHandler (void)
         {
             UART_TransmitterInterrupt2(OFF);
         }
+        IFS1bits.U2TXIF = 0;
     }
-    IFS1bits.U2RXIF = 0;
-    IFS1bits.U2TXIF = 0; 
+}
+
+/******************************************************************************/
+/* UART 3 Interrupt (debug UART)
+/******************************************************************************/
+void __ISR(_UART_3_VECTOR , IPL7AUTO) UART3_IntHandler (void)
+{
+    unsigned char data;
+    
+    if(IFS1bits.U3RXIF && IEC1bits.U3RXIE)
+    {
+        /* receive interrupt */        
+        if(U3STAbits.FERR)
+        {
+            /* 
+             * Receive error. This could be from a break or incorrect
+             *  baud rate 
+             */
+            while(U3STAbits.URXDA)
+            {
+                data = U3RXREG;
+                if(!data)
+                {
+                    /* There was a break */
+                    Nop();
+                }
+            }
+        }
+        else
+        {
+            while(U3STAbits.URXDA)
+            {
+                /* receive buffer has data */
+                data = U3RXREG;
+                UART_RaspSendChar(data);
+                if(UART_Rasp_NewlineMode == TRUE)
+                {
+                    if(data == '\r')
+                    {
+                        UART_RaspSendChar('\n');
+                    }
+                }                
+            }
+        }
+        IFS1bits.U3RXIF = 0;
+    }
+    if(IFS2bits.U3TXIF && IEC2bits.U3TXIE)
+    {
+        if(TX3_Buffer_REMOVE_Place != TX3_Buffer_ADD_Place)
+        {
+            U3TXREG = TX3_Buffer[TX3_Buffer_REMOVE_Place];
+            TX3_Buffer_REMOVE_Place++;
+            if(TX3_Buffer_REMOVE_Place >= UART3_TRANSMIT_SIZE)
+            {
+                TX3_Buffer_REMOVE_Place = 0;
+            }
+        }
+        else
+        {
+            UART_TransmitterInterrupt3(OFF);
+        }
+        IFS2bits.U3TXIF = 0;
+    }    
 }
 
 /******************************************************************************/
@@ -510,9 +544,9 @@ void __ISR(_UART_2_VECTOR , IPL7AUTO) UART2_IntHandler (void)
 /******************************************************************************/
 void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
 {
-    unsigned char data;
- 
-    if(IFS2bits.U4RXIF)
+     unsigned char data;
+    
+    if(IFS2bits.U4RXIF && IEC2bits.U4RXIE)
     {
         /* receive interrupt */        
         if(U4STAbits.FERR)
@@ -527,14 +561,10 @@ void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
                 if(!data)
                 {
                     /* There was a break */
-                    UserSentBreak = TRUE;
-                    Banner_Correct_place = 0;
+                    Nop();
                 }
             }
-            if(UserSentBreak)
-            {
-                UART_SendLongBreak2();
-            }
+            IFS2bits.U4RXIF = 0;
         }
         else
         {
@@ -542,21 +572,11 @@ void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
             {
                 /* receive buffer has data */
                 data = U4RXREG;
-                UART_RS232_MaleSendChar(data);
-                if(RX4_Buffer_Place < UART4_RECEIVE_SIZE)
-                {
-                    RX4_Buffer[RX4_Buffer_Place] = data;
-                    RX4_Buffer_Place++;
-                }
-                else
-                {
-                    /* Overflow */
-                    UART_CleanReceive4();
-                }
+                UART_DebugSendChar(data);
             }
         }
     }
-    if(IFS2bits.U4TXIF)
+    if(IFS2bits.U4TXIF && IEC2bits.U4TXIE)
     {
         if(TX4_Buffer_REMOVE_Place != TX4_Buffer_ADD_Place)
         {
@@ -571,9 +591,8 @@ void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
         {
             UART_TransmitterInterrupt4(OFF);
         }
+        IFS2bits.U4TXIF = 0;
     }
-    IFS2bits.U4RXIF = 0;
-    IFS2bits.U4TXIF = 0;
 }
 
 /******************************************************************************/
@@ -828,8 +847,7 @@ void __ISR(_DMA_3_VECTOR , IPL7AUTO) DMA_3_IntHandler (void)
         {
             if(DMA_TransferType == DMA_SPI_TRANSMIT)
             {
-                /* transmit buffer has been copied so start transmitting */
-                RDI_SPI_TransferToRaspberry(DMA_TransferAmount);
+                Nop();
             }
         }
         DMA_BufferCopierComplete = TRUE;

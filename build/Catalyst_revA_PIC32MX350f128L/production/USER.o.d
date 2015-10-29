@@ -10,8 +10,7 @@ MISC.h  \
 SYSTEM.h  \
 POWER.h  \
 PWM.h  \
- RDI.h  \
-RTCC.h  \
+ RTCC.h  \
 SPI.h  \
 TIMERS.h  \
 UART.h 

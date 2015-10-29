@@ -135,9 +135,9 @@ void InitPWM(void)
     /* Red led is OC3 */
     /* Green led is OC2 */
     /* Blue led is OC1 */      
-    RPD2R    = 0b1011;    // RD2 = OC3 aka Red on RGB LED
-    RPB6R    = 0b1011;    // RB6 = OC2 aka Green on RGB LED
-    RPD1R    = 0b1100;    // RD1 = OC1 aka Blue on RGB LED
+    RPD2R    = RGB_RedLED_Module;    // RD2 = OC3 aka Red on RGB LED
+    RPB6R    = RGB_GreenLED_Module;  // RB6 = OC2 aka Green on RGB LED
+    RPD1R    = RGB_BlueLED_Module;   // RD1 = OC1 aka Blue on RGB LED
     
     // Initialize Output Compare Module
     OC1CONbits.SIDL = 0; // Continue operation in Idle mode
@@ -158,15 +158,12 @@ void InitPWM(void)
     OC1CONbits.OCTSEL = 0; // Select Timer 2 as output compare time base
     OC2CONbits.OCTSEL = 0; // Select Timer 2 as output compare time base
     OC3CONbits.OCTSEL = 0; // Select Timer 2 as output compare time base
-    
-    TMR_ResetTimer2();
-    TMR_InterruptTimer2(ON);
 }
 
 /******************************************************************************/
 /* PWM_Module
  *
- * This function controls the PWM pins.
+ * This function controls the PWM module.
 /******************************************************************************/
 unsigned char PWM_Module(unsigned char state)
 {

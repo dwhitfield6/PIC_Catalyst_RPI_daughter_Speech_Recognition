@@ -122,7 +122,9 @@ void SPI_Mode(unsigned char master_slave, unsigned char bits, unsigned char mode
     {
         SPI2CONbits.MSTEN = 1; // master mode
         RASP_SPI_MOSITris   = OUTPUT;
+#ifndef Catalyst_Expander_IR_RF_revA
         RASP_SPI_MOSI2Tris  = INPUT;
+#endif
         RASP_SPI_MISOTris   = INPUT;
         RASP_SPI_CLKTris    = OUTPUT;
         RASP_SPI_CSTris     = OUTPUT;
@@ -140,7 +142,9 @@ void SPI_Mode(unsigned char master_slave, unsigned char bits, unsigned char mode
     {
         SPI2CONbits.MSTEN = 0; // slave mode  
         RASP_SPI_MOSITris   = INPUT;
+#ifndef Catalyst_Expander_IR_RF_revA
         RASP_SPI_MOSI2Tris  = INPUT;
+#endif
         RASP_SPI_MISOTris   = OUTPUT;
         RASP_SPI_CLKTris    = INPUT;
         RASP_SPI_CSTris     = INPUT;
@@ -151,7 +155,9 @@ void SPI_Mode(unsigned char master_slave, unsigned char bits, unsigned char mode
         RPB15R = RASP_SPI_MISO_Pin;         // SDO2 aka MOSI
     
         /* Set remappable inputs */
+#ifndef Catalyst_Expander_IR_RF_revA
         SDI2R = RASP_SPI_MOSI_Module;       // SDI2 aka MISO
+#endif
         SS2R = RASP_SPI_CS2_Module;         // SS2 aka CS
     }
     

@@ -42,14 +42,21 @@ unsigned char RX4_Buffer[UART4_RECEIVE_SIZE];
 unsigned char RX5_Buffer[UART5_RECEIVE_SIZE];
 unsigned char TX1_Buffer[UART1_TRANSMIT_SIZE];
 unsigned char TX2_Buffer[UART2_TRANSMIT_SIZE];
+unsigned char TX3_Buffer[UART3_TRANSMIT_SIZE];
 unsigned char TX4_Buffer[UART4_TRANSMIT_SIZE];
+unsigned char TX5_Buffer[UART5_TRANSMIT_SIZE];
 volatile unsigned short TX1_Buffer_ADD_Place = 0;
 volatile unsigned short TX2_Buffer_ADD_Place = 0;
+volatile unsigned short TX3_Buffer_ADD_Place = 0;
 volatile unsigned short TX4_Buffer_ADD_Place = 0;
+volatile unsigned short TX5_Buffer_ADD_Place = 0;
 unsigned short TX1_Buffer_REMOVE_Place = 0;
 unsigned short TX2_Buffer_REMOVE_Place = 0;
+unsigned short TX3_Buffer_REMOVE_Place = 0;
 unsigned short TX4_Buffer_REMOVE_Place = 0;
-unsigned char UserSentBreak = FALSE;
+unsigned short TX5_Buffer_REMOVE_Place = 0;
+unsigned char UART_Rasp_NewlineMode;
+unsigned char UART_Debug_NewlineMode;
 
 /******************************************************************************/
 /* Inline Functions
@@ -271,6 +278,8 @@ inline void UART_SendCharacter5(unsigned char data)
 /******************************************************************************/
 void InitUART(void)
 {
+    unsigned char dummy;
+    
     U1MODE = 0;
     U2MODE = 0;
     U3MODE = 0;
@@ -285,14 +294,14 @@ void InitUART(void)
     /* Set remappable outputs */
     RPC4R = RASP_UART_TX_Module;        // U1TX    
     RPF5R = RS232_MALE_TX_Module;       // U2TX
-    RPF5R = RS232_MALE_RTS_Module;      // U3TX
+    RPF1R = DEBUG_UART_TX_Module;       // U3TX
     RPF12R = RS232_FEMALE_TX_Module;    // U4TX
     RPF8R = RS232_FEMALE_RTS_Module;    // U5TX
     
     /* Set remappable inputs */
     U1RXR = RASP_UART_RX_Pin;           // U1RX
     U2RXR = RS232_MALE_RX_Pin;          // U2RX
-    U3RXR = RS232_MALE_CTS_Pin;         // U3RX
+    U3RXR = DEBUG_UART_RX_Pin;          // U3RX
     U4RXR = RS232_FEMALE_RX_Pin;        // U4RX
     U5RXR = RS232_FEMALE_CTS_Pin;       // U5RX
     
@@ -310,40 +319,70 @@ void InitUART(void)
     MSC_CleanBuffer(RX4_Buffer, UART4_RECEIVE_SIZE);
     MSC_CleanBuffer(RX5_Buffer, UART5_RECEIVE_SIZE);
 
-    /* Set up the debug port (module 1) */
+    /* Set up the Raspberry pi port (module 1) */
     UART_SetParameters1(115200, NO, 1);
     UART_Module1(ON);
     UART_Receiver1(ON);
     UART_Transmitter1(ON);
     IPC7bits.U1IP = 4; // interrupt priority is 4
     IPC7bits.U1IS = 3; // interrupt sub-priority is 3
+    dummy = U1RXREG;
+    dummy = U1RXREG;
+    dummy = U1RXREG;
+    dummy = U1RXREG;
     IFS1bits.U1RXIF = 0;            // clear interrupt
     IFS1bits.U1TXIF = 0;            // clear interrupt
     UART_ReceiverInterrupt1(ON);
     UART_TransmitterInterrupt1(OFF);
+    UART_Rasp_NewlineMode = TRUE; // add a new line after a carriage return
     
     /* Set up the Male RS232 port (module 2) */
     UART_RS232_MaleParameters(115200, NO, 1);
     UART_RS232_Male(ON, ON, ON);
     IPC9bits.U2IP = 4; // interrupt priority is 4
     IPC9bits.U2IS = 3; // interrupt sub-priority is 3
+    dummy = U2RXREG;
+    dummy = U2RXREG;
+    dummy = U2RXREG;
+    dummy = U2RXREG;
     IFS1bits.U2RXIF = 0;            // clear interrupt
     IFS1bits.U2TXIF = 0;            // clear interrupt
     UART_ReceiverInterrupt2(ON);
     UART_TransmitterInterrupt2(OFF);
+    
+    /* Set up the debug port (module 3) */
+    UART_SetParameters3(115200, NO, 1);
+    UART_Module3(ON);
+    UART_Receiver3(ON);
+    UART_Transmitter3(ON);
+    IPC9bits.U3IP = 4; // interrupt priority is 4
+    IPC9bits.U3IS = 3; // interrupt sub-priority is 3
+    dummy = U3RXREG;
+    dummy = U3RXREG;
+    dummy = U3RXREG;
+    dummy = U3RXREG;
+    IFS1bits.U3RXIF = 0;            // clear interrupt
+    IFS2bits.U3TXIF = 0;            // clear interrupt
+    UART_ReceiverInterrupt3(ON);
+    UART_TransmitterInterrupt3(OFF);
+    UART_Debug_NewlineMode = TRUE; // add a new line after a carriage return
     
     /* Set up the Female RS232 port (module 4) */
     UART_RS232_FemaleParameters(115200, NO, 1);
     UART_RS232_Female(ON, ON, ON);
     IPC9bits.U4IP = 4; // interrupt priority is 4
     IPC9bits.U4IS = 3; // interrupt sub-priority is 3
+    dummy = U4RXREG;
+    dummy = U4RXREG;
+    dummy = U4RXREG;
+    dummy = U4RXREG;
     IFS2bits.U4RXIF = 0;            // clear interrupt
     IFS2bits.U4TXIF = 0;            // clear interrupt
     UART_ReceiverInterrupt4(ON);
     UART_TransmitterInterrupt4(OFF);
     
-    /* set passthrough mode so that we can debug the raspberry pi */
-    UART_DebugPassthrough(ON);
+    /* set disable passthrough mode so that we can debug the raspberry pi */
+    UART_DebugPassthrough(OFF);
 }
 
 /******************************************************************************/
@@ -374,20 +413,20 @@ void UART_DebugPassthrough(unsigned char state)
 }
 
 /******************************************************************************/
-/* UART_RS232_FemaleSendChar
+/* UART_RaspSendChar
  *
- * The function sends a character over the Female rs232 port.
+ * The function sends a character over the over the Raspberry pi UART port.
 /******************************************************************************/
-void UART_RS232_FemaleSendChar(unsigned char data)
+void UART_RaspSendChar(unsigned char data)
 {
     /* transmit buffer is full so use interrupts to empty buffer */
-    TX4_Buffer[TX4_Buffer_ADD_Place] = data;
-    TX4_Buffer_ADD_Place++;
-    if(TX4_Buffer_ADD_Place >= UART4_TRANSMIT_SIZE)
+    TX1_Buffer[TX1_Buffer_ADD_Place] = data;
+    TX1_Buffer_ADD_Place++;
+    if(TX1_Buffer_ADD_Place >= UART1_TRANSMIT_SIZE)
     {
-        TX4_Buffer_ADD_Place = 0;
+        TX1_Buffer_ADD_Place = 0;
     }
-    UART_TransmitterInterrupt4(ON);
+    UART_TransmitterInterrupt1(ON);
 }
 
 /******************************************************************************/
@@ -408,6 +447,54 @@ void UART_RS232_MaleSendChar(unsigned char data)
 }
 
 /******************************************************************************/
+/* UART_DebugSendChar
+ *
+ * The function sends a character over the debug port.
+/******************************************************************************/
+void UART_DebugSendChar(unsigned char data)
+{
+    /* transmit buffer is full so use interrupts to empty buffer */
+    TX3_Buffer[TX3_Buffer_ADD_Place] = data;
+    TX3_Buffer_ADD_Place++;
+    if(TX3_Buffer_ADD_Place >= UART3_TRANSMIT_SIZE)
+    {
+        TX3_Buffer_ADD_Place = 0;
+    }
+    UART_TransmitterInterrupt3(ON);
+}
+
+/******************************************************************************/
+/* UART_RS232_FemaleSendChar
+ *
+ * The function sends a character over the Female rs232 port.
+/******************************************************************************/
+void UART_RS232_FemaleSendChar(unsigned char data)
+{
+    /* transmit buffer is full so use interrupts to empty buffer */
+    TX4_Buffer[TX4_Buffer_ADD_Place] = data;
+    TX4_Buffer_ADD_Place++;
+    if(TX4_Buffer_ADD_Place >= UART4_TRANSMIT_SIZE)
+    {
+        TX4_Buffer_ADD_Place = 0;
+    }
+    UART_TransmitterInterrupt4(ON);
+}
+
+/******************************************************************************/
+/* UART_RaspSendString
+ *
+ * The function sends a string over the Raspberry pi UART port.
+/******************************************************************************/
+void UART_RaspSendString(unsigned char* data)
+{
+    while(*data)
+    {
+        UART_RaspSendChar(*data);
+        data++;
+    }
+}
+
+/******************************************************************************/
 /* UART_RS232_MaleSendString
  *
  * The function sends a string over the Male rs232 port.
@@ -420,6 +507,21 @@ void UART_RS232_MaleSendString(unsigned char* data)
         data++;
     }
 }
+
+/******************************************************************************/
+/* UART_DebugSendString
+ *
+ * The function sends a string over the debug port.
+/******************************************************************************/
+void UART_DebugSendString(unsigned char* data)
+{
+    while(*data)
+    {
+        UART_DebugSendChar(*data);
+        data++;
+    }
+}
+
 
 /******************************************************************************/
 /* UART_RS232_FemaleSendString
@@ -436,99 +538,7 @@ void UART_RS232_FemaleSendString(unsigned char* data)
 }
 
 /******************************************************************************/
-/* UART_RS232_MaleSendConstString
- *
- * The function sends a constant string over the Male rs232 port.
-/******************************************************************************/
-void UART_RS232_MaleSendConstString(const unsigned char* data)
-{
-    while(*data)
-    {
-        UART_RS232_MaleSendChar(*data);
-        data++;
-    }
-}
-
-/******************************************************************************/
-/* UART_RS232_FemaleSendConstString
- *
- * The function sends a constant string over the Female rs232 port.
-/******************************************************************************/
-void UART_RS232_FemaleSendConstString(const unsigned char* data)
-{
-    while(*data)
-    {
-        UART_RS232_FemaleSendChar(*data);
-        data++;
-    }
-}
-
-/******************************************************************************/
-/* UART_RS232_MaleSendStringCRLN
- *
- * The function sends a string followed by a carriage return over the Male 
- *  rs232 port. 
-/******************************************************************************/
-void UART_RS232_MaleSendStringCRLN(unsigned char* data)
-{
-    while(*data)
-    {
-        UART_RS232_MaleSendChar(*data);
-        data++;
-    }
-    UART_RS232_MaleSendConstString("\r\n");
-}
-
-/******************************************************************************/
-/* UART_RS232_FemaleSendStringCRLN
- *
- * The function sends a string followed by a carriage return over the Female 
- *  rs232 port. 
-/******************************************************************************/
-void UART_RS232_FemaleSendStringCRLN(unsigned char* data)
-{
-    while(*data)
-    {
-        UART_RS232_FemaleSendChar(*data);
-        data++;
-    }
-    UART_RS232_FemaleSendConstString("\r\n");
-}
-
-/******************************************************************************/
-/* UART_RS232_MaleSendConstStringCRLN
- *
- * The function sends a constant string followed by a carriage return over the 
- *  Male rs232 port. 
-/******************************************************************************/
-void UART_RS232_MaleSendConstStringCRLN(const unsigned char* data)
-{
-    while(*data)
-    {
-        UART_RS232_MaleSendChar(*data);
-        data++;
-    }
-    UART_RS232_MaleSendConstString("\r\n");
-}
-
-/******************************************************************************/
-/* UART_RS232_FemaleSendConstStringCRLN
- *
- * The function sends a constant string followed by a carriage return over the 
- *  Female rs232 port. 
-/******************************************************************************/
-void UART_RS232_FemaleSendConstStringCRLN(const unsigned char* data)
-{
-    while(*data)
-    {
-        UART_RS232_FemaleSendChar(*data);
-        data++;
-    }
-    UART_RS232_FemaleSendString("\r\n");
-}
-
-/******************************************************************************/
-/* UART_Rasp_Comm
+/* UART_Rasp
  *
  * The function controls the UART port connected to the raspberry pi.
 /******************************************************************************/
@@ -540,7 +550,19 @@ void UART_Rasp(unsigned char module, unsigned char transmit, unsigned char recei
 }
 
 /******************************************************************************/
-/* UART_Rasp_Comm
+/* UART_Debug
+ *
+ * The function controls the UART debug port.
+/******************************************************************************/
+void UART_Debug(unsigned char module, unsigned char transmit, unsigned char receive)
+{
+    UART_Module3(module);
+    UART_Receiver3(receive);
+    UART_Transmitter3(transmit);
+}
+
+/******************************************************************************/
+/* UART_RS232_Male
  *
  * The function controls the UART port connected to the raspberry pi.
 /******************************************************************************/
@@ -553,7 +575,7 @@ void UART_RS232_Male(unsigned char module, unsigned char transmit, unsigned char
 }
 
 /******************************************************************************/
-/* UART_Rasp_Comm
+/* UART_RS232_Female
  *
  * The function controls the UART port connected to the raspberry pi.
 /******************************************************************************/
@@ -1283,11 +1305,11 @@ void UART_SendShortBreak5(void)
 }
 
 /******************************************************************************/
-/* UART_SendLongBreak1
+/* UART_RaspSendLongBreak
  *
  * The function sends a long break on the next transmission.
 /******************************************************************************/
-void UART_SendLongBreak1(void)
+void UART_RaspSendLongBreak(void)
 {
     unsigned char status;
     
@@ -1308,11 +1330,11 @@ void UART_SendLongBreak1(void)
 }
 
 /******************************************************************************/
-/* UART_SendLongBreak2
+/* UART_RS232_MaleSendLongBreak
  *
  * The function sends a long break on the next transmission.
 /******************************************************************************/
-void UART_SendLongBreak2(void)
+void UART_RS232_MaleSendLongBreak(void)
 {
     unsigned char status;
     
@@ -1333,11 +1355,11 @@ void UART_SendLongBreak2(void)
 }
 
 /******************************************************************************/
-/* UART_SendLongBreak3
+/* UART_RS232_MaleRTSSendLongBreak
  *
  * The function sends a long break on the next transmission.
 /******************************************************************************/
-void UART_SendLongBreak3(void)
+void UART_RS232_MaleRTSSendLongBreak(void)
 {
     unsigned char status;
     
@@ -1358,11 +1380,11 @@ void UART_SendLongBreak3(void)
 }
 
 /******************************************************************************/
-/* UART_SendLongBreak4
+/* UART_RS232_FemaleSendLongBreak
  *
  * The function sends a long break on the next transmission.
 /******************************************************************************/
-void UART_SendLongBreak4(void)
+void UART_RS232_FemaleSendLongBreak(void)
 {
     unsigned char status;
     
@@ -1383,11 +1405,11 @@ void UART_SendLongBreak4(void)
 }
 
 /******************************************************************************/
-/* UART_SendLongBreak5
+/* UART_RS232_FemaleRTSSendLongBreak
  *
  * The function sends a long break on the next transmission.
 /******************************************************************************/
-void UART_SendLongBreak5(void)
+void UART_RS232_FemaleRTSSendLongBreak(void)
 {
     unsigned char status;
     
@@ -1493,6 +1515,33 @@ void UART_CleanReceive4(void)
 void UART_CleanReceive5(void)
 {
     RX5_Buffer_Place = 0;
+}
+
+/******************************************************************************/
+/* UART_RS232_FemalePrintBanner
+ *
+ * The function prints the project banner on the female RS232 port.
+/******************************************************************************/
+void UART_RS232_FemalePrintBanner(void)
+{
+    UART_RS232_FemaleSendString(CRLN);
+    UART_RS232_FemaleSendString(CRLN);
+    UART_RS232_FemaleSendString(PROJECT_NAME);
+    UART_RS232_FemaleSendString(CRLN);
+    UART_RS232_FemaleSendString("Firmware Version: ");
+    UART_RS232_FemaleSendString(Version);
+    UART_RS232_FemaleSendChar('.');
+    UART_RS232_FemaleSendString(Revision);
+    UART_RS232_FemaleSendString(Alpha);
+    if(Branch_Version[0] != 0)
+    {
+        UART_RS232_FemaleSendChar('_');
+        UART_RS232_FemaleSendString(Branch_Version);
+    }
+    UART_RS232_FemaleSendString(CRLN);
+    UART_RS232_FemaleSendString("Copywrite Marley Circuits (c) 2015");
+    UART_RS232_FemaleSendString(CRLN);
+    UART_RS232_FemaleSendString(CRLN);
 }
 
 /*-----------------------------------------------------------------------------/
