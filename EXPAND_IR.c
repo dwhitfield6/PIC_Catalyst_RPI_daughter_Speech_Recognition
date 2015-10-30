@@ -37,43 +37,48 @@
  *                              
 /******************************************************************************/
 /*~~~~~~~~~~~~~~ Sanyo TV ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const unsigned long Sanyo_Power         = 0x1CE348B7;
-const unsigned long Sanyo_Sleep         = 0x1CE3B04F;
-const unsigned long Sanyo_Menu          = 0x1CE3E817;
-const unsigned long Sanyo_Volume_Up     = 0x1CE3708F;
-const unsigned long Sanyo_Volume_Down   = 0x1CE3F00F;
-const unsigned long Sanyo_Channel_Up    = 0x1CE350AF;
-const unsigned long Sanyo_Channel_Down  = 0x1CE3D02F;
-const unsigned long Sanyo_Mute          = 0x1CE318E7;
-const unsigned long Sanyo_Back          = 0x1CE39867;
-const unsigned long Sanyo_1             = 0x1CE3807F;
-const unsigned long Sanyo_2             = 0x1CE340BF;
-const unsigned long Sanyo_3             = 0x1CE3C03F;
-const unsigned long Sanyo_4             = 0x1CE320DF;
-const unsigned long Sanyo_5             = 0x1CE3A05F;
-const unsigned long Sanyo_6             = 0x1CE3609F;
-const unsigned long Sanyo_7             = 0x1CE3E01F;
-const unsigned long Sanyo_8             = 0x1CE310EF;
-const unsigned long Sanyo_9             = 0x1CE3906F;
-const unsigned long Sanyo_0             = 0x1CE300FF;
-const unsigned long Sanyo_Enter         = 0x1CE32AD5;
-const unsigned long Sanyo_Source        = 0x1CE3C837;
-const unsigned long Sanyo_Rewind        = 0x1CE3946B;
-const unsigned long Sanyo_Play          = 0x1CE324DB;
-const unsigned long Sanyo_Forward       = 0x1CE314EB;
-const unsigned long Sanyo_Record        = 0xFFFFFFFF;
-const unsigned long Sanyo_Pause         = 0x1CE3649B;
-const unsigned long Sanyo_Stop          = 0x1CE3A45B;
+unsigned long Sanyo_Power         = 0x1CE348B7;
+unsigned long Sanyo_Sleep         = 0x1CE3B04F;
+unsigned long Sanyo_Menu          = 0x1CE3E817;
+unsigned long Sanyo_Volume_Up     = 0x1CE3708F;
+unsigned long Sanyo_Volume_Down   = 0x1CE3F00F;
+unsigned long Sanyo_Channel_Up    = 0x1CE350AF;
+unsigned long Sanyo_Channel_Down  = 0x1CE3D02F;
+unsigned long Sanyo_Mute          = 0x1CE318E7;
+unsigned long Sanyo_Back          = 0x1CE39867;
+unsigned long Sanyo_1             = 0x1CE3807F;
+unsigned long Sanyo_2             = 0x1CE340BF;
+unsigned long Sanyo_3             = 0x1CE3C03F;
+unsigned long Sanyo_4             = 0x1CE320DF;
+unsigned long Sanyo_5             = 0x1CE3A05F;
+unsigned long Sanyo_6             = 0x1CE3609F;
+unsigned long Sanyo_7             = 0x1CE3E01F;
+unsigned long Sanyo_8             = 0x1CE310EF;
+unsigned long Sanyo_9             = 0x1CE3906F;
+unsigned long Sanyo_0             = 0x1CE300FF;
+unsigned long Sanyo_Enter         = 0x1CE32AD5;
+unsigned long Sanyo_Source        = 0x1CE3C837;
+unsigned long Sanyo_Rewind        = 0x1CE3946B;
+unsigned long Sanyo_Play          = 0x1CE324DB;
+unsigned long Sanyo_Forward       = 0x1CE314EB;
+unsigned long Sanyo_Record        = 0xFFFFFFFF;
+unsigned long Sanyo_Pause         = 0x1CE3649B;
+unsigned long Sanyo_Stop          = 0x1CE3A45B;
 
 /*~~~~~~~~~~~~~~ Vizio TV ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const unsigned long Vizio_Power         = 0x20DF10EF;
-const unsigned long Vizio_Sleep         = 0x20DF708F;
-const unsigned long Vizio_Menu          = 0x20DFF20D;
-const unsigned long Vizio_Volume_Up     = 0x20DF40BF;
-const unsigned long Vizio_Volume_Down   = 0x20DFC03F;
+unsigned long Vizio_Power         = 0x20DF10EF;
+unsigned long Vizio_Sleep         = 0x20DF708F;
+unsigned long Vizio_Menu          = 0x20DFF20D;
+unsigned long Vizio_Volume_Up     = 0x20DF40BF;
+unsigned long Vizio_Volume_Down   = 0x20DFC03F;
 
 /*~~~~~~~~~~~~~~ Idylis AC unit ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const unsigned long Idylis_Power        = 0x20DF10EF;
+unsigned long Idylis_Power        = 0x4FB40BF;
+unsigned long Idylis_FanSpeed     = 0x4FB58A7;
+unsigned long Idylis_Mode         = 0x4FB906F;
+unsigned long Idylis_Plus         = 0x4FB50AF;
+unsigned long Idylis_Minus        = 0x4FB8877;
+unsigned long Idylis_Timer        = 0x4FB9867;
 
 /******************************************************************************/
 /* User Global Variable Declaration                                           */

@@ -23,18 +23,13 @@
 #include "USER.h"
 
 /******************************************************************************/
-/* Structures                                                                 */
+/* check phrase
+ *
+ * This is the phase that triggers the system to check for the key command
+ *  phrases.
 /******************************************************************************/
-typedef void (*pFunction)(void); // pointer to a function
+#define CHECK_PHRASE   "Listening..."
 
-typedef struct commands
-{
-	unsigned char command[80]; // command phrase to check for
-	pFunction Function;        // function to call when phrase is found
-    unsigned long* pValue;      // pointer to the value to pass into the function
-    unsigned long index;       // place in string where match function is currently looking
-}COMMANDTYPE;
-    
 /******************************************************************************/
 /* NUMBER_OF_COMMANDS
  *
@@ -43,10 +38,23 @@ typedef struct commands
 #define NUMBER_OF_COMMANDS 7
 
 /******************************************************************************/
+/* Structures                                                                 */
+/******************************************************************************/
+typedef void (*pFunction)(void); // pointer to a function
+
+typedef struct commands
+{
+	unsigned char command[80]; // command phrase to check for
+	pFunction Function;        // function to call when phrase is found
+    long* pValue;      // pointer to the value to pass into the function
+    unsigned long index;       // place in string where match function is currently looking
+}COMMANDTYPE;
+   
+/******************************************************************************/
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
 extern COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS];
-extern unsigned long* CommandDataPointer;
+extern long* CommandDataPointer;
 
 /******************************************************************************/
 /* Defines                                                                    */

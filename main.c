@@ -12,6 +12,7 @@
  *                          Added template for expander card to do IR/RF.
  *                          Added IR functionality.
  *                          Added phrase searching for the pi UART parsing.
+ *                          Added RF functionality.
  * 10/22/15     10.0_DW0a   Initial project make ported from 
  *                            "Catalyst_RPI_daughter" tag '9.0_DW0a'.
  * 10/02/15     1.0_DW0a    Initial project make.
@@ -79,6 +80,7 @@
 /******************************************************************************/
 /* Defines                                                                    */
 /******************************************************************************/
+#define LED_TIMEOUT 0xFFFFF
 
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
@@ -92,6 +94,7 @@ short main (void)
 {
     unsigned long i;
     unsigned char index = 0;
+    unsigned long LED_Counter = LED_TIMEOUT;
     
     /* Initialize */
     SYS_Watchdog(OFF);
@@ -118,9 +121,26 @@ short main (void)
             {
                 UART_RS232_FemaleSendString(COMMANDS[index].command);
                 UART_RS232_FemaleSendString(CRLN);
+                LED_Counter = 0;
             }
             PhraseSearchFind = FALSE;
             UART_CleanReceive1();
+        }
+        if(LED_Counter < LED_TIMEOUT)
+        {
+            if(LED_Counter == 0)
+            {
+                PWM_SetColor(GREEN, NOTHING,NOTHING);
+            }
+            LED_Counter++;
+        }
+        else
+        {
+            if(LED_Counter == LED_TIMEOUT)
+            {
+                PWM_SetColor(RED, NOTHING,NOTHING);
+                LED_Counter++;
+            }
         }
     }
 }

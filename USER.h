@@ -441,7 +441,7 @@
 #define IR_LED2 0x00000002  // RG1
 
 /******* RF transmitter in Expander module (EXPAND2) *******/
-/* Connected N-channel mosfet that controls the IR LED */
+/* Connected to the 315 MHz transmitter */
 #define RF_TRANSMIT_Tris	TRISFbits.TRISF4
 #define RF_TRANSMIT 0x00000010  // RF4
 #endif

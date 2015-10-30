@@ -80,17 +80,18 @@
 #include <stdbool.h>       /* For true/false definition */
 #include <sys/attribs.h>     /* For __ISR definition */
 
+#include "ADC.h"
+#include "CMD.h"
+#include "DMA.h"
 #include "EXPAND_IR.h"
+#include "I2C.h"
+#include "MISC.h"
 #include "POWER.h"
 #include "PWM.h"
-#include "UART.h"
 #include "RTCC.h"
-#include "TIMERS.h"
-#include "I2C.h"
-#include "ADC.h"
-#include "DMA.h"
 #include "SPI.h"
-#include "MISC.h"
+#include "TIMERS.h"
+#include "UART.h"
 
 /******************************************************************************/
 /* Global Variables                                                           */
@@ -389,7 +390,7 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
                 }
                 UART_DebugSendChar(data);
                 /* check for a matching sequence to see if we should check the buffer for a phrase */
-                if(MSC_StreamingPhraseSearch(data,"check"))
+                if(MSC_StreamingPhraseSearch(data,CHECK_PHRASE))
                 {
                     if(RX1_Buffer_Place < (UART1_RECEIVE_SIZE - 1))
                     {

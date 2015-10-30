@@ -1,15 +1,16 @@
 build/Catalyst_revA_PIC32MX350f128L/production/INTERRUPTS.o:  \
 INTERRUPTS.c  \
- EXPAND_IR.h  \
+ ADC.h  \
 USER.h  \
+CMD.h  \
+DMA.h  \
+EXPAND_IR.h  \
+I2C.h  \
+MISC.h  \
+SYSTEM.h  \
 POWER.h  \
 PWM.h  \
-UART.h  \
-RTCC.h  \
-TIMERS.h  \
-I2C.h  \
-ADC.h  \
- DMA.h  \
+ RTCC.h  \
 SPI.h  \
-MISC.h  \
-SYSTEM.h 
+TIMERS.h  \
+UART.h 

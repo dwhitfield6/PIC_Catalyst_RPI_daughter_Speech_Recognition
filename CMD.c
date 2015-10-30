@@ -34,14 +34,14 @@
 COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS]= {
     {"Television", IR_SendNEC_Repeat_CMD,&Sanyo_Power},
     {"Livingroom Light", RF_SendCode_CMD,LivingroomLight},
-    {"Livingroom Fan", RF_SendCode_CMD,LivingroomFan},
+    {"Livingroom Fan", RF_SendCode_CMD,LivingroomFanOn},
     {"Bedroom Light", RF_SendCode_CMD,BedroomLight},
-    {"Bedroom Fan", RF_SendCode_CMD,BedroomFan},
+    {"Bedroom Fan", RF_SendCode_CMD,BedroomFanOn},
     {"Christmas Tree pretty", RF_SendCode_CMD,ChristmasTreeColor},
-    {"Christmas Tree ugly", RF_SendCode_CMD,ChristmasTreeWhite},
+    {"Christmas Tree ugly", RF_SendCode_CMD,ChristmasTreeWhiteOn},
 };
 
-unsigned long* CommandDataPointer;
+long* CommandDataPointer;
 
 /******************************************************************************/
 /* Inline Functions
