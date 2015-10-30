@@ -382,14 +382,20 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
             {
                 /* receive buffer has data */
                 data = U1RXREG;
-                if(RX1_Buffer_Place < UART1_RECEIVE_SIZE)
+                if(RX1_Buffer_Place < (UART1_RECEIVE_SIZE - 1))
                 {
                     RX1_Buffer[RX1_Buffer_Place] = data;
                     RX1_Buffer_Place++;
                 }
                 UART_DebugSendChar(data);
                 /* check for a matching sequence to see if we should check the buffer for a phrase */
-                MSC_StreamingPhraseSearch(data,"check");
+                if(MSC_StreamingPhraseSearch(data,"check"))
+                {
+                    if(RX1_Buffer_Place < (UART1_RECEIVE_SIZE - 1))
+                    {
+                        RX1_Buffer[RX1_Buffer_Place] = 0;
+                    }
+                }
                 
                 if(UART_Debug_NewlineMode == TRUE)
                 {

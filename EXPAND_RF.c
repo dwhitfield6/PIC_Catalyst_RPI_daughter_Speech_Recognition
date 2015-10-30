@@ -35,26 +35,26 @@
  *                               
 /******************************************************************************/
 /*~~~~~~~~~~~~~~ Livingroom light ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const long LivingroomLight[RF_CODE_SIZE];
+const long LivingroomLight[RF_CODE_SIZE] = {CODE_END};
 
 /*~~~~~~~~~~~~~~ Livingroom fan ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const long LivingroomFan[RF_CODE_SIZE];
+const long LivingroomFan[RF_CODE_SIZE] = {CODE_END};
 
 /*~~~~~~~~~~~~~~ Christmas tree white lights ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const long ChristmasTreeWhite[RF_CODE_SIZE];
+const long ChristmasTreeWhite[RF_CODE_SIZE] = {CODE_END};
 
 /*~~~~~~~~~~~~~~ Christmas tree colored lights ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const long ChristmasTreeColor[RF_CODE_SIZE];
+const long ChristmasTreeColor[RF_CODE_SIZE] = {CODE_END};
 
 /*~~~~~~~~~~~~~~ Bedroom light ~~~~~~~~~~~~~~~~~~~~~~~~*/
 /* RFA108 channel E */
-const long BedroomLight[RF_CODE_SIZE];
+const long BedroomLight[RF_CODE_SIZE] = {CODE_END};
 
 /*~~~~~~~~~~~~~~ Bedroom fan ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const long BedroomFan[RF_CODE_SIZE];
+const long BedroomFan[RF_CODE_SIZE] = {CODE_END};
 
 /*~~~~~~~~~~~~~~ Joes room light ~~~~~~~~~~~~~~~~~~~~~~~~*/
-const long JoesroomLight[RF_CODE_SIZE];
+const long JoesroomLight[RF_CODE_SIZE] = {CODE_END};
 
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
@@ -127,13 +127,14 @@ void InitRF(void)
 /******************************************************************************/
 void RF_SendCode(unsigned long *code)
 {
-    unsigned char i;
+    unsigned char i,RF_Place;
     unsigned long* pointer = code;
     
     for(i=0;i<RF_TRANSMIT_REPEAT;i++)
     {
         pointer = code;
-        while(*pointer != CODE_END)
+        RF_Place = 0;
+        while(*pointer != CODE_END && RF_Place < RF_CODE_SIZE)
         {
             if(RF_GetState)
             {
@@ -145,6 +146,7 @@ void RF_SendCode(unsigned long *code)
             }
             MSC_DelayUS(*pointer);
             pointer++;
+            RF_Place++;
         }
     }
 }

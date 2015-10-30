@@ -114,8 +114,13 @@ short main (void)
     {
         if(PhraseSearchFind == TRUE)
         {
-            CMD_Match(RX1_Buffer, COMMANDS, &index);
+            if(CMD_Match(RX1_Buffer, &COMMANDS[0], &index))
+            {
+                UART_RS232_FemaleSendString(COMMANDS[index].command);
+                UART_RS232_FemaleSendString(CRLN);
+            }
             PhraseSearchFind = FALSE;
+            UART_CleanReceive1();
         }
     }
 }

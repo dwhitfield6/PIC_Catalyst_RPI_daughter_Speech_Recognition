@@ -31,14 +31,14 @@
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
-const COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS]= {
+COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS]= {
     {"Television", IR_SendNEC_Repeat_CMD,&Sanyo_Power},
-    {"Livingroom Light", RF_SendCode,LivingroomLight},
-    {"Livingroom Fan", RF_SendCode,LivingroomFan},
-    {"Bedroom Light", RF_SendCode,BedroomLight},
-    {"Bedroom Fan", RF_SendCode,BedroomFan},
-    {"Christmas Tree pretty", RF_SendCode,ChristmasTreeColor},
-    {"Christmas Tree ugly", RF_SendCode,ChristmasTreeWhite},
+    {"Livingroom Light", RF_SendCode_CMD,LivingroomLight},
+    {"Livingroom Fan", RF_SendCode_CMD,LivingroomFan},
+    {"Bedroom Light", RF_SendCode_CMD,BedroomLight},
+    {"Bedroom Fan", RF_SendCode_CMD,BedroomFan},
+    {"Christmas Tree pretty", RF_SendCode_CMD,ChristmasTreeColor},
+    {"Christmas Tree ugly", RF_SendCode_CMD,ChristmasTreeWhite},
 };
 
 unsigned long* CommandDataPointer;
@@ -73,15 +73,15 @@ unsigned char CMD_Match(unsigned char* buffer, COMMANDTYPE* commands, unsigned c
         for(i=0;i< NUMBER_OF_COMMANDS;i++)
         {
             /* search for letter in all commands */
-            if(commands[i].Value[commands[i].index] == 0)
+            if(commands[i].command[commands[i].index] == 0)
             {
                 /* the command has been found */
-                CommandDataPointer = commands[i].Value;
+                CommandDataPointer = commands[i].pValue;
                 commands[i].Function();
                 *Match_Index = i;
                 return TRUE;
             }
-            if(commands[i].Value[commands[i].index] == *buffer)
+            if(commands[i].command[commands[i].index] == *buffer)
             {
                 /* the letter matches the command */
                 commands[i].index++;
@@ -94,6 +94,7 @@ unsigned char CMD_Match(unsigned char* buffer, COMMANDTYPE* commands, unsigned c
         }
         buffer++;
     }
+    return FALSE;
 }
 
 /*-----------------------------------------------------------------------------/

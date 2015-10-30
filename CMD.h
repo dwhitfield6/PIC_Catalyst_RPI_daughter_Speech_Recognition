@@ -31,7 +31,7 @@ typedef struct commands
 {
 	unsigned char command[80]; // command phrase to check for
 	pFunction Function;        // function to call when phrase is found
-    unsigned long* Value;      // value to pass into the function
+    unsigned long* pValue;      // pointer to the value to pass into the function
     unsigned long index;       // place in string where match function is currently looking
 }COMMANDTYPE;
     
@@ -45,7 +45,7 @@ typedef struct commands
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
-extern const COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS];
+extern COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS];
 extern unsigned long* CommandDataPointer;
 
 /******************************************************************************/
