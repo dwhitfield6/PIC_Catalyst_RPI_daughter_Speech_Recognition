@@ -43,8 +43,8 @@
  *
  * This is the number of characters that fit in the UART 3 receive buffer.
 /******************************************************************************/
-#define UART3_RECEIVE_SIZE 8192
-#define UART3_TRANSMIT_SIZE 8192
+#define UART3_RECEIVE_SIZE 512
+#define UART3_TRANSMIT_SIZE 512
 /******************************************************************************/
 /* UART4_RECEIVE_SIZE
  *

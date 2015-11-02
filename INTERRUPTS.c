@@ -360,7 +360,12 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
     
     if(IFS1bits.U1RXIF && IEC1bits.U1RXIE)
     {
-        /* receive interrupt */        
+        /* receive interrupt */ 
+        if(U1STAbits.OERR)
+        {
+            /* overrun */
+            U1STAbits.OERR = 0;
+        }
         if(U1STAbits.FERR)
         {
             /* 
@@ -437,7 +442,12 @@ void __ISR(_UART_2_VECTOR , IPL7AUTO) UART2_IntHandler (void)
     
     if(IFS1bits.U2RXIF && IEC1bits.U2RXIE)
     {
-        /* receive interrupt */        
+        /* receive interrupt */
+        if(U2STAbits.OERR)
+        {
+            /* overrun */
+            U2STAbits.OERR = 0;
+        }        
         if(U2STAbits.FERR)
         {
             /* 
@@ -492,7 +502,12 @@ void __ISR(_UART_3_VECTOR , IPL7AUTO) UART3_IntHandler (void)
     
     if(IFS1bits.U3RXIF && IEC1bits.U3RXIE)
     {
-        /* receive interrupt */        
+        /* receive interrupt */ 
+        if(U3STAbits.OERR)
+        {
+            /* overrun */
+            U3STAbits.OERR = 0;
+        }
         if(U3STAbits.FERR)
         {
             /* 
@@ -551,11 +566,16 @@ void __ISR(_UART_3_VECTOR , IPL7AUTO) UART3_IntHandler (void)
 /******************************************************************************/
 void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
 {
-     unsigned char data;
+    unsigned char data;
     
     if(IFS2bits.U4RXIF && IEC2bits.U4RXIE)
     {
-        /* receive interrupt */        
+        /* receive interrupt */ 
+        if(U4STAbits.OERR)
+        {
+            /* overrun */
+            U4STAbits.OERR = 0;
+        }  
         if(U4STAbits.FERR)
         {
             /* 

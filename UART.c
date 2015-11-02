@@ -334,7 +334,7 @@ void InitUART(void)
     IFS1bits.U1TXIF = 0;            // clear interrupt
     UART_ReceiverInterrupt1(ON);
     UART_TransmitterInterrupt1(OFF);
-    UART_Rasp_NewlineMode = TRUE; // add a new line after a carriage return
+    UART_Rasp_NewlineMode = FALSE; // dont add a new line after a carriage return
     
     /* Set up the Male RS232 port (module 2) */
     UART_RS232_MaleParameters(115200, NO, 1);
@@ -380,9 +380,6 @@ void InitUART(void)
     IFS2bits.U4TXIF = 0;            // clear interrupt
     UART_ReceiverInterrupt4(ON);
     UART_TransmitterInterrupt4(OFF);
-    
-    /* set disable passthrough mode so that we can debug the raspberry pi */
-    UART_DebugPassthrough(OFF);
 }
 
 /******************************************************************************/
