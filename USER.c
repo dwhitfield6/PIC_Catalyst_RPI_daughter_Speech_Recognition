@@ -88,7 +88,7 @@ void Init_App(void)
     /* initialize pins */
     PWR_Volts5(ON);     // turn on the 5 volt rail
     PWR_Charge(TRUE);   // charge the capacitor
-    PWR_RASP(ON);       // power on the raspberry pi
+    PWR_RASP(OFF);       // power off the raspberry pi
     
     /*~~~~~~~~~~~~~ Red LED ~~~~~~~~~~~~~~~~~*/
     MSC_RedLEDOFF();

@@ -356,17 +356,13 @@ void __ISR(_SPI_2_VECTOR , IPL7AUTO) SPI2_IntHandler (void)
 /******************************************************************************/
 void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
 {
-    unsigned char data;
+    unsigned char data,i;
+    unsigned char receiver,transmitter;
     
     if(IFS1bits.U1RXIF && IEC1bits.U1RXIE)
     {
         /* receive interrupt */ 
-        if(U1STAbits.OERR)
-        {
-            /* overrun */
-            U1STAbits.OERR = 0;
-        }
-        if(U1STAbits.FERR)
+        if(U1STAbits.FERR || U1STAbits.OERR)
         {
             /* 
              * Receive error. This could be from a break or incorrect
@@ -375,12 +371,32 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
             while(U1STAbits.URXDA)
             {
                 data = U1RXREG;
-                if(!data)
-                {
-                    /* There was a break */
-                    Nop();
-                }
             }
+            if(U1STAbits.OERR)
+            {
+                /* overrun */
+                receiver = UART_Receiver1Read();
+                transmitter = UART_Transmitter1Read();
+                for(i=0;i<SYNC_WORKAROUND_NUMBER;i++)
+                {
+                    /* errata workaround */
+                    UART_Module1(OFF);
+                    Nop();
+                    Nop();
+                    Nop();
+                    Nop();
+                    UART_Module1(ON);
+                }
+                if(receiver)
+                {
+                   UART_Receiver1(ON); 
+                }
+                if(transmitter)
+                {
+                    UART_Transmitter1(ON);
+                }                                                           
+                U1STAbits.OERR = 0;
+            }  
         }
         else
         {
@@ -438,17 +454,13 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
 /******************************************************************************/
 void __ISR(_UART_2_VECTOR , IPL7AUTO) UART2_IntHandler (void)
 {
-    unsigned char data;
+    unsigned char data,i;
+    unsigned char receiver,transmitter;
     
     if(IFS1bits.U2RXIF && IEC1bits.U2RXIE)
     {
-        /* receive interrupt */
-        if(U2STAbits.OERR)
-        {
-            /* overrun */
-            U2STAbits.OERR = 0;
-        }        
-        if(U2STAbits.FERR)
+        /* receive interrupt */ 
+        if(U2STAbits.FERR || U2STAbits.OERR)
         {
             /* 
              * Receive error. This could be from a break or incorrect
@@ -457,12 +469,32 @@ void __ISR(_UART_2_VECTOR , IPL7AUTO) UART2_IntHandler (void)
             while(U2STAbits.URXDA)
             {
                 data = U2RXREG;
-                if(!data)
-                {
-                    /* There was a break */
-                    Nop();
-                }
             }
+            if(U2STAbits.OERR)
+            {
+                /* overrun */
+                receiver = UART_Receiver2Read();
+                transmitter = UART_Transmitter2Read();
+                for(i=0;i<SYNC_WORKAROUND_NUMBER;i++)
+                {
+                    /* errata workaround */
+                    UART_Module2(OFF);
+                    Nop();
+                    Nop();
+                    Nop();
+                    Nop();
+                    UART_Module2(ON);
+                }
+                if(receiver)
+                {
+                   UART_Receiver2(ON); 
+                }
+                if(transmitter)
+                {
+                    UART_Transmitter2(ON);
+                }  
+                U2STAbits.OERR = 0;
+            }  
         }
         else
         {
@@ -498,17 +530,13 @@ void __ISR(_UART_2_VECTOR , IPL7AUTO) UART2_IntHandler (void)
 /******************************************************************************/
 void __ISR(_UART_3_VECTOR , IPL7AUTO) UART3_IntHandler (void)
 {
-    unsigned char data;
+    unsigned char data,i;
+    unsigned char receiver,transmitter;
     
     if(IFS1bits.U3RXIF && IEC1bits.U3RXIE)
     {
         /* receive interrupt */ 
-        if(U3STAbits.OERR)
-        {
-            /* overrun */
-            U3STAbits.OERR = 0;
-        }
-        if(U3STAbits.FERR)
+        if(U3STAbits.FERR || U3STAbits.OERR)
         {
             /* 
              * Receive error. This could be from a break or incorrect
@@ -517,12 +545,32 @@ void __ISR(_UART_3_VECTOR , IPL7AUTO) UART3_IntHandler (void)
             while(U3STAbits.URXDA)
             {
                 data = U3RXREG;
-                if(!data)
-                {
-                    /* There was a break */
-                    Nop();
-                }
             }
+            if(U3STAbits.OERR)
+            {
+                /* overrun */
+                receiver = UART_Receiver3Read();
+                transmitter = UART_Transmitter3Read();
+                for(i=0;i<SYNC_WORKAROUND_NUMBER;i++)
+                {
+                    /* errata workaround */
+                    UART_Module3(OFF);
+                    Nop();
+                    Nop();
+                    Nop();
+                    Nop();
+                    UART_Module3(ON);
+                }
+                if(receiver)
+                {
+                   UART_Receiver3(ON); 
+                }
+                if(transmitter)
+                {
+                    UART_Transmitter3(ON);
+                } 
+                U3STAbits.OERR = 0;
+            }  
         }
         else
         {
@@ -566,17 +614,13 @@ void __ISR(_UART_3_VECTOR , IPL7AUTO) UART3_IntHandler (void)
 /******************************************************************************/
 void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
 {
-    unsigned char data;
+    unsigned char data,i;
+    unsigned char receiver,transmitter;
     
     if(IFS2bits.U4RXIF && IEC2bits.U4RXIE)
     {
         /* receive interrupt */ 
-        if(U4STAbits.OERR)
-        {
-            /* overrun */
-            U4STAbits.OERR = 0;
-        }  
-        if(U4STAbits.FERR)
+        if(U4STAbits.FERR || U4STAbits.OERR)
         {
             /* 
              * Receive error. This could be from a break or incorrect
@@ -585,13 +629,32 @@ void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
             while(U4STAbits.URXDA)
             {
                 data = U4RXREG;
-                if(!data)
-                {
-                    /* There was a break */
-                    Nop();
-                }
             }
-            IFS2bits.U4RXIF = 0;
+            if(U4STAbits.OERR)
+            {
+                /* overrun */
+                receiver = UART_Receiver4Read();
+                transmitter = UART_Transmitter4Read();
+                for(i=0;i<SYNC_WORKAROUND_NUMBER;i++)
+                {
+                    /* errata workaround */
+                    UART_Module4(OFF);
+                    Nop();
+                    Nop();
+                    Nop();
+                    Nop();
+                    UART_Module4(ON);
+                }
+                if(receiver)
+                {
+                   UART_Receiver4(ON); 
+                }
+                if(transmitter)
+                {
+                    UART_Transmitter4(ON);
+                } 
+                U4STAbits.OERR = 0;
+            }  
         }
         else
         {
@@ -609,6 +672,7 @@ void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
                 } 
             }
         }
+        IFS2bits.U4RXIF = 0;
     }
     if(IFS2bits.U4TXIF && IEC2bits.U4TXIE)
     {

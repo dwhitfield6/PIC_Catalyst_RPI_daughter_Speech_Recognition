@@ -25,7 +25,7 @@
 /******************************************************************************/
 #define CPU_VERSION    "10"
 #define CPU_REVISION   "1"
-#define CPU_ALPHA      ""                 /* use "" for no alpha.  */ 
+#define CPU_ALPHA      "a"                 /* use "" for no alpha.  */ 
 #define CPU_BRANCH     ""             /* use "" for no branch. */
 
 /******************************************************************************/

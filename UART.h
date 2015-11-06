@@ -69,6 +69,23 @@
 #define LONG_BREAK_US 250000
 
 /******************************************************************************/
+/* SYNC_WORKAROUND_NUMBER
+ *
+ * This is number of times that we toggle the UART status when we reach an
+ *  overflow. 
+ * 
+ * Errata:
+ * During a RX FIFO overflow condition, the shift
+ * register stops receiving data. This causes the
+ * UART to lose synchronization with the serial data
+ * stream. The only way to recover from this is to turn
+ * the UART OFF and ON until it synchronizes. This
+ * could require several OFF/ON sequences
+ * 
+/******************************************************************************/
+#define SYNC_WORKAROUND_NUMBER 6
+
+/******************************************************************************/
 /* Defines                                                                    */
 /******************************************************************************/
 #define NO      0

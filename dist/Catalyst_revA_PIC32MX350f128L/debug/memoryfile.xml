@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <project>                                  
-  <executable name="dist/Catalyst_revA_PIC32MX350f128L/production/PIC_Catalyst_RPI_daughter_Speech_Recognition.production.elf">                 
+  <executable name="dist/Catalyst_revA_PIC32MX350f128L/debug/PIC_Catalyst_RPI_daughter_Speech_Recognition.debug.elf">                 
     <memory name="program">                 
       <units>bytes</units>                 
       <length>138752</length>                 
-      <used>87612</used>                     
-      <free>51140</free>                     
+      <used>87700</used>                     
+      <free>51052</free>                     
     </memory>                              
     <memory name="data">              
       <units>bytes</units>                 
       <length>32768</length>                 
-      <used>24364</used>                     
-      <free>8404</free>                     
+      <used>24876</used>                     
+      <free>7892</free>                     
     </memory>                              
   </executable>                            
 </project>                                 
