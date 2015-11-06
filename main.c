@@ -13,6 +13,7 @@
  *                          Added IR functionality.
  *                          Added phrase searching for the pi UART parsing.
  *                          Added RF functionality.
+ *                          Added raspberry pi integration with sphinx.
  * 10/22/15     10.0_DW0a   Initial project make ported from 
  *                            "Catalyst_RPI_daughter" tag '9.0_DW0a'.
  * 10/02/15     1.0_DW0a    Initial project make.
@@ -107,15 +108,39 @@ short main (void)
     {
         PWM_SetColor(i/3, NOTHING,NOTHING);
         MSC_DelayUS(100000);      
-    }
+    }  
+    PWM_SetColor(BLUE, NOTHING,NOTHING); // LED is BLUE while linux boots
+    UART_RS232_FemalePrintBanner(); // print project banner
+       
+    /* login to the system after boot */
+    CMD_PhraseChecking(ON);
+    CMD_PhraseCheckingReset(0);
+    CMD_StreamingPhraseSet("raspberrypi login:", 0);
+    while(!CMD_StreamingPhraseFound(0));
+    CMD_PhraseCheckingClear(0);
+    UART_RaspSendString("root\r\n"); // pi
+    CMD_StreamingPhraseSet("Password", 0);
+    while(!CMD_StreamingPhraseFound(0));
+    CMD_PhraseCheckingClear(0);
+    UART_RaspSendString("pi\r\n"); // raspberry
+    PWM_SetColor(PURPLE, NOTHING,NOTHING); // LED is PURPLE after linux boots
     
-    /* turn off the LED  */
-    PWM_SetColor(NOTHING, NOTHING,NOTHING);
- 
-    UART_RS232_FemalePrintBanner();
+    /* start sphinx */
+    UART_RaspSendString("cd ..\r\n"); // go to home directory
+    UART_RaspSendString("cd /home/pi/Speech_Programs/\r\n"); // go where directory is
+    UART_RaspSendString("export LD_LIBRARY_PATH=/usr/local/lib\r\n"); // export library
+    UART_RaspSendString("export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig\r\n"); // export configuration
+    UART_RaspSendString("pocketsphinx_continuous -hmm /usr/local/share/pocketsphinx/model/en-us/en-us"
+            " -lm 5394.lm -dict 5394.dic -samprate 16000/8000/48000 -inmic yes -adcdev sysdefault\r\n");
+    
+    /* start checking for the speech command breaker "Listening..." */
+    CMD_PhraseCheckingReset(0);
+    CMD_StreamingPhraseSet(CHECK_PHRASE, 0);
+    
     while(1)
     {
-        if(PhraseSearchFind == TRUE)
+        /* search for command */
+        if(CMD_StreamingPhraseFound(0))
         {
             if(CMD_Match(RX1_Buffer, &COMMANDS[0], &index))
             {
@@ -123,9 +148,10 @@ short main (void)
                 UART_RS232_FemaleSendString(CRLN);
                 LED_Counter = 0;
             }
-            PhraseSearchFind = FALSE;
-            UART_CleanReceive1();
+            CMD_PhraseCheckingReset(0);
         }
+        
+        /* LED timing */
         if(LED_Counter < LED_TIMEOUT)
         {
             if(LED_Counter == 0)

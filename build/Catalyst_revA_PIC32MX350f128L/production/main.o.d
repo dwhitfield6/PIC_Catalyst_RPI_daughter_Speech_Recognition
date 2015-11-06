@@ -3,11 +3,11 @@ main.c  \
 ADC.h  \
  USER.h  \
 CMD.h  \
+UART.h  \
 EXPAND_RF.h  \
 EXPAND_IR.h  \
 MISC.h  \
 SYSTEM.h  \
 PWM.h  \
 RTCC.h  \
-SPI.h  \
- UART.h 
+ SPI.h 

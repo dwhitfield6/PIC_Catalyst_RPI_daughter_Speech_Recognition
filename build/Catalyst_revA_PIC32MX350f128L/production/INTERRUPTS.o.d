@@ -3,14 +3,14 @@ INTERRUPTS.c  \
  ADC.h  \
 USER.h  \
 CMD.h  \
+UART.h  \
 DMA.h  \
 EXPAND_IR.h  \
 I2C.h  \
 MISC.h  \
 SYSTEM.h  \
-POWER.h  \
+ POWER.h  \
 PWM.h  \
- RTCC.h  \
+RTCC.h  \
 SPI.h  \
-TIMERS.h  \
-UART.h 
+TIMERS.h 

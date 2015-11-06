@@ -123,7 +123,6 @@
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
-extern unsigned char PhraseSearchFind;
 
 /******************************************************************************/
 /* Function prototypes                                                        */
@@ -150,6 +149,5 @@ unsigned short MSC_HEXtoBCD(unsigned short input);
 unsigned short MSC_BCDtoHEX(unsigned short input);
 unsigned long MSC_Endian(unsigned long number, unsigned char bits, unsigned char style);
 unsigned long MSC_ReverseLong(unsigned long This);
-unsigned char MSC_StreamingPhraseSearch(unsigned char data,unsigned char* phrase);
 
 #endif	/* MISC_H */

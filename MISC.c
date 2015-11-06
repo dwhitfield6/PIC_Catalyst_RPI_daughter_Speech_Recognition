@@ -38,7 +38,6 @@
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
-unsigned char PhraseSearchFind = FALSE;
 
 /******************************************************************************/
 /* Inline Functions                                                           */
@@ -515,36 +514,6 @@ unsigned long MSC_ReverseLong(unsigned long This)
     temp += (This & 0x80000000) >> 31;
 
     return temp;
-}
-
-/******************************************************************************/
-/* MSC_StreamingPhraseSearch
- *
- * The function checks for a phrase live when data is streaming.
-/******************************************************************************/
-unsigned char MSC_StreamingPhraseSearch(unsigned char data,unsigned char* phrase)
-{
-    static unsigned long index =0;
-    
-    if(phrase[index] == 0)
-    {
-        /* start over if we are already pointing at a null */
-        index = 0;
-    }
-    
-    if(data == phrase[index])
-    {
-        index++;
-        if(phrase[index] == 0)
-        {
-            PhraseSearchFind = TRUE;
-        }
-    }
-    else
-    {
-        /* start over since the data does not match the phrase */
-        index = 0;
-    }
 }
 
 /*-----------------------------------------------------------------------------/

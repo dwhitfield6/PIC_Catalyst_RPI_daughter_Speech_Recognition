@@ -93,8 +93,8 @@ void InitSPI(void)
     SPI2CONbits.SSEN = 1;   // Slave select pin used for Slave mode
     SPI2CONbits.DISSDO = 0; // SDO pin is controlled by the module
     SPI2CONbits.DISSDI = 0; // SDI pin is controlled by the module 
-    IPC8bits.SPI2IP = 6; // interrupt priority is 6
-    IPC8bits.SPI2IS = 3; // interrupt sub-priority is 3
+    IPC8bits.SPI2IP = 3; // interrupt priority is 6
+    IPC8bits.SPI2IS = 1; // interrupt sub-priority is 3
     IFS1bits.SPI2RXIF = 0;            // clear interrupt
     IFS1bits.SPI2TXIF = 0;            // clear interrupt
     SPI2CONbits.STXISEL = 0b11; // Interrupt is generated when the buffer is not full (has one or more empty elements)

@@ -20,6 +20,7 @@
 #include <stdint.h>         /* For uint8_t definition */
 #include <stdbool.h>        /* For true/false definition */
 
+#include "UART.h"
 #include "USER.h"
 
 /******************************************************************************/
@@ -28,14 +29,21 @@
  * This is the phase that triggers the system to check for the key command
  *  phrases.
 /******************************************************************************/
-#define CHECK_PHRASE   "Listening..."
+#define CHECK_PHRASE   "READY...."
 
 /******************************************************************************/
 /* NUMBER_OF_COMMANDS
  *
  * This is the number of commands.
 /******************************************************************************/
-#define NUMBER_OF_COMMANDS 7
+#define NUMBER_OF_COMMANDS 9
+
+/******************************************************************************/
+/* PHRASE_CHANNELS
+ *
+ * This is the number of phrases that we can search for at the same time.
+/******************************************************************************/
+#define PHRASE_CHANNELS 10
 
 /******************************************************************************/
 /* Structures                                                                 */
@@ -55,6 +63,10 @@ typedef struct commands
 /******************************************************************************/
 extern COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS];
 extern long* CommandDataPointer;
+extern unsigned char PhraseSearchFind[PHRASE_CHANNELS];
+extern unsigned char SearchPhrase[UART1_RECEIVE_SIZE];
+extern unsigned char CheckPhrase;
+extern unsigned long PhraseIndex[PHRASE_CHANNELS];
 
 /******************************************************************************/
 /* Defines                                                                    */
@@ -67,6 +79,13 @@ extern long* CommandDataPointer;
 /******************************************************************************/
 /* Function prototypes                                                        */
 /******************************************************************************/
+void InitCMD(void);
 unsigned char CMD_Match(unsigned char* buffer, COMMANDTYPE* commands, unsigned char* Match_Index);
+unsigned char CMD_StreamingPhraseFound(unsigned char channel);
+void CMD_StreamingPhraseSet(unsigned char* phrase, unsigned char channel);
+unsigned char CMD_PhraseChecking(unsigned char state);
+void CMD_PhraseCheckingClear(unsigned char channel);
+void CMD_PhraseCheckingReset(unsigned char channel);
+unsigned char CMD_StreamingPhraseSearch(unsigned char data,unsigned char* phrase, unsigned char channel);
 
 #endif	/* CMD_H */

@@ -395,7 +395,7 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
                 }
                 UART_DebugSendChar(data);
                 /* check for a matching sequence to see if we should check the buffer for a phrase */
-                if(MSC_StreamingPhraseSearch(data,CHECK_PHRASE))
+                if(CMD_StreamingPhraseSearch(data,SearchPhrase,0))
                 {
                     if(RX1_Buffer_Place < (UART1_RECEIVE_SIZE - 1))
                     {
@@ -600,6 +600,13 @@ void __ISR(_UART_4_VECTOR , IPL7AUTO) UART4_IntHandler (void)
                 /* receive buffer has data */
                 data = U4RXREG;
                 UART_DebugSendChar(data);
+                if(UART_RS232_FemaleNewlineMode == TRUE)
+                {
+                    if(data == '\r')
+                    {
+                        UART_DebugSendChar('\n');
+                    }
+                } 
             }
         }
     }

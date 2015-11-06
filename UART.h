@@ -27,39 +27,39 @@
  *
  * This is the number of characters that fit in the UART 1 receive buffer.
 /******************************************************************************/
-#define UART1_RECEIVE_SIZE 512
-#define UART1_TRANSMIT_SIZE 512
+#define UART1_RECEIVE_SIZE 6000
+#define UART1_TRANSMIT_SIZE 1000
 
 /******************************************************************************/
 /* UART2_RECEIVE_SIZE
  *
  * This is the number of characters that fit in the UART 2 receive buffer.
 /******************************************************************************/
-#define UART2_RECEIVE_SIZE 512
-#define UART2_TRANSMIT_SIZE 512
+#define UART2_RECEIVE_SIZE 10
+#define UART2_TRANSMIT_SIZE 100
 
 /******************************************************************************/
 /* UART3_RECEIVE_SIZE
  *
  * This is the number of characters that fit in the UART 3 receive buffer.
 /******************************************************************************/
-#define UART3_RECEIVE_SIZE 512
-#define UART3_TRANSMIT_SIZE 512
+#define UART3_RECEIVE_SIZE 100
+#define UART3_TRANSMIT_SIZE 100
 /******************************************************************************/
 /* UART4_RECEIVE_SIZE
  *
  * This is the number of characters that fit in the UART 4 receive buffer.
 /******************************************************************************/
-#define UART4_RECEIVE_SIZE 512
-#define UART4_TRANSMIT_SIZE 512
+#define UART4_RECEIVE_SIZE 20
+#define UART4_TRANSMIT_SIZE 20
 
 /******************************************************************************/
 /* UART5_RECEIVE_SIZE
  *
  * This is the number of characters that fit in the UART 5 receive buffer.
 /******************************************************************************/
-#define UART5_RECEIVE_SIZE 10
-#define UART5_TRANSMIT_SIZE 10
+#define UART5_RECEIVE_SIZE 2
+#define UART5_TRANSMIT_SIZE 2
 
 /******************************************************************************/
 /* LONG_BREAK_US
@@ -107,6 +107,8 @@ extern unsigned short TX4_Buffer_REMOVE_Place;
 extern unsigned short TX5_Buffer_REMOVE_Place;
 extern unsigned char UART_Rasp_NewlineMode;
 extern unsigned char UART_Debug_NewlineMode;
+extern unsigned char UART_RS232_FemaleNewlineMode;
+extern unsigned char UART_RS232_MaleNewlineMode;
 
 /******************************************************************************/
 /* Function prototypes                                                        */

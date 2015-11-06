@@ -56,8 +56,8 @@ void InitRTCC(void)
 {
     RTCC_ClearTime(&CurrentTime);
     RTCC_ClearTime(&SetTime);
-    IPC6bits.RTCCIP= 6;  // interrupt priority is 6
-    IPC6bits.RTCCIS = 3; // interrupt sub-priority is 3
+    IPC6bits.RTCCIP= 3;  // interrupt priority is 6
+    IPC6bits.RTCCIS = 1; // interrupt sub-priority is 3
     IFS0bits.RTCCIF = 0;            // clear interrupt 
     if(!RTCC_ConfigOscillator())
     {

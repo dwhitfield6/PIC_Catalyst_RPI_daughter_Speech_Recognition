@@ -32,16 +32,22 @@
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
 COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS]= {
-    {"Television", IR_SendNEC_Repeat_CMD,&Sanyo_Power},
-    {"Livingroom Light", RF_SendCode_CMD,LivingroomLight},
-    {"Livingroom Fan", RF_SendCode_CMD,LivingroomFanOn},
-    {"Bedroom Light", RF_SendCode_CMD,BedroomLight},
-    {"Bedroom Fan", RF_SendCode_CMD,BedroomFanOn},
-    {"Christmas Tree pretty", RF_SendCode_CMD,ChristmasTreeColor},
-    {"Christmas Tree ugly", RF_SendCode_CMD,ChristmasTreeWhiteOn},
+    {"TELEVISION", IR_SendNEC_Repeat_CMD,&Sanyo_Power},
+    {"VOLUME UP", IR_SendNEC_Repeat_CMD,&Sanyo_Volume_Up},
+    {"VOLUME DOWN", IR_SendNEC_Repeat_CMD,&Sanyo_Volume_Down},
+    {"LIVINGROOM LIGHT", RF_SendCode_CMD,LivingroomLight},
+    {"LIVINGROOM FAN", RF_SendCode_CMD,LivingroomFanOn},
+    {"BEDROOM LIGHT", RF_SendCode_CMD,BedroomLight},
+    {"BEDROOM FAN", RF_SendCode_CMD,BedroomFanOn},
+    {"CHRISTMAS BEAUTIFUL", RF_SendCode_CMD,ChristmasTreeColor},
+    {"CHRISTMAS UGLY", RF_SendCode_CMD,ChristmasTreeWhiteOn},
 };
 
 long* CommandDataPointer;
+unsigned char PhraseSearchFind[PHRASE_CHANNELS];
+unsigned char SearchPhrase[UART1_RECEIVE_SIZE];
+unsigned char CheckPhrase = FALSE;
+unsigned long PhraseIndex[PHRASE_CHANNELS];
 
 /******************************************************************************/
 /* Inline Functions
@@ -50,6 +56,22 @@ long* CommandDataPointer;
 /******************************************************************************/
 /* Functions
 /******************************************************************************/
+
+/******************************************************************************/
+/* InitCMD
+ *
+ * The function initializes the command and phrase searching.
+/******************************************************************************/
+void InitCMD(void)
+{
+    unsigned char i;
+    
+    for(i=0; i<PHRASE_CHANNELS;i++)
+    {
+        CMD_PhraseCheckingClear(0);
+        CMD_PhraseCheckingReset(0);
+    }
+}
 
 /******************************************************************************/
 /* CMD_Match
@@ -93,6 +115,127 @@ unsigned char CMD_Match(unsigned char* buffer, COMMANDTYPE* commands, unsigned c
             }
         }
         buffer++;
+    }
+    return FALSE;
+}
+
+/******************************************************************************/
+/* CMD_StreamingPhraseFound
+ *
+ * The function checks if the phrase was found.
+/******************************************************************************/
+unsigned char CMD_StreamingPhraseFound(unsigned char channel)
+{
+    if(PhraseSearchFind[channel])
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+/******************************************************************************/
+/* CMD_StreamingPhraseSet
+ *
+ * The function sets the phrase to search for.
+/******************************************************************************/
+void CMD_StreamingPhraseSet(unsigned char* phrase, unsigned char channel)
+{
+    unsigned char status;
+    status = CMD_PhraseChecking(OFF);
+    CMD_PhraseCheckingClear(channel);
+    MSC_StringCopy(phrase, &SearchPhrase[channel]);
+    if(status)
+    {
+        CMD_PhraseChecking(ON);
+    }
+}
+
+/******************************************************************************/
+/* CMD_PhraseChecking
+ *
+ * The function controls phase checking.
+/******************************************************************************/
+unsigned char CMD_PhraseChecking(unsigned char state)
+{
+    unsigned char status = CheckPhrase;
+    if(state)
+    {
+        CheckPhrase = TRUE;
+    }
+    else
+    {
+        CheckPhrase = FALSE;
+    }
+    return status;
+}
+
+/******************************************************************************/
+/* CMD_PhraseCheckingClear
+ *
+ * The function resets phase checking algorithm.
+/******************************************************************************/
+void CMD_PhraseCheckingClear(unsigned char channel)
+{
+    unsigned char status;
+    status = CMD_PhraseChecking(OFF);
+    PhraseIndex[channel] = 0;
+    PhraseSearchFind[channel] = 0;
+    if(status)
+    {
+        CMD_PhraseChecking(ON);
+    }
+}
+
+/******************************************************************************/
+/* CMD_PhraseCheckingReset
+ *
+ * The function resets phase checking algorithm and clears the buffer.
+/******************************************************************************/
+void CMD_PhraseCheckingReset(unsigned char channel)
+{
+    unsigned char status;
+    
+    status = CMD_PhraseChecking(OFF);
+    PhraseSearchFind[channel] = FALSE;         
+    CMD_PhraseCheckingClear(channel);
+    MSC_CleanBuffer(RX1_Buffer, UART1_RECEIVE_SIZE);
+    UART_CleanReceive1();
+    if(status)
+    {
+        CMD_PhraseChecking(ON);
+    }
+}
+
+            
+/******************************************************************************/
+/* CMD_StreamingPhraseSearch
+ *
+ * The function checks for a phrase live when data is streaming.
+/******************************************************************************/
+unsigned char CMD_StreamingPhraseSearch(unsigned char data,unsigned char* phrase, unsigned char channel)
+{  
+    if(CheckPhrase)
+    {
+        if(phrase[PhraseIndex[channel]] == 0)
+        {
+            /* start over if we are already pointing at a null */
+            PhraseIndex[channel] = 0;
+        }
+
+        if(data == phrase[PhraseIndex[channel]])
+        {
+            PhraseIndex[channel]++;
+            if(phrase[PhraseIndex[channel]] == 0)
+            {
+                PhraseSearchFind[channel] = TRUE;
+                return TRUE;
+            }
+        }
+        else
+        {
+            /* start over since the data does not match the phrase */
+            PhraseIndex[channel] = 0;
+        }
     }
     return FALSE;
 }

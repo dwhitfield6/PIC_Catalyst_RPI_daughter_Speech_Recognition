@@ -57,6 +57,8 @@ unsigned short TX4_Buffer_REMOVE_Place = 0;
 unsigned short TX5_Buffer_REMOVE_Place = 0;
 unsigned char UART_Rasp_NewlineMode;
 unsigned char UART_Debug_NewlineMode;
+unsigned char UART_RS232_FemaleNewlineMode;
+unsigned char UART_RS232_MaleNewlineMode;
 
 /******************************************************************************/
 /* Inline Functions
@@ -324,7 +326,7 @@ void InitUART(void)
     UART_Module1(ON);
     UART_Receiver1(ON);
     UART_Transmitter1(ON);
-    IPC7bits.U1IP = 4; // interrupt priority is 4
+    IPC7bits.U1IP = 6; // interrupt priority is 4
     IPC7bits.U1IS = 3; // interrupt sub-priority is 3
     dummy = U1RXREG;
     dummy = U1RXREG;
@@ -340,7 +342,7 @@ void InitUART(void)
     UART_RS232_MaleParameters(115200, NO, 1);
     UART_RS232_Male(ON, ON, ON);
     IPC9bits.U2IP = 4; // interrupt priority is 4
-    IPC9bits.U2IS = 3; // interrupt sub-priority is 3
+    IPC9bits.U2IS = 1; // interrupt sub-priority is 3
     dummy = U2RXREG;
     dummy = U2RXREG;
     dummy = U2RXREG;
@@ -349,14 +351,15 @@ void InitUART(void)
     IFS1bits.U2TXIF = 0;            // clear interrupt
     UART_ReceiverInterrupt2(ON);
     UART_TransmitterInterrupt2(OFF);
+    UART_RS232_MaleNewlineMode = TRUE; // add a new line after a carriage return
     
     /* Set up the debug port (module 3) */
     UART_SetParameters3(115200, NO, 1);
     UART_Module3(ON);
     UART_Receiver3(ON);
     UART_Transmitter3(ON);
-    IPC9bits.U3IP = 4; // interrupt priority is 4
-    IPC9bits.U3IS = 3; // interrupt sub-priority is 3
+    IPC9bits.U3IP = 5; // interrupt priority is 4
+    IPC9bits.U3IS = 2; // interrupt sub-priority is 3
     dummy = U3RXREG;
     dummy = U3RXREG;
     dummy = U3RXREG;
@@ -365,13 +368,13 @@ void InitUART(void)
     IFS2bits.U3TXIF = 0;            // clear interrupt
     UART_ReceiverInterrupt3(ON);
     UART_TransmitterInterrupt3(OFF);
-    UART_Debug_NewlineMode = TRUE; // add a new line after a carriage return
+    UART_Debug_NewlineMode = FALSE; // dont add a new line after a carriage return
     
     /* Set up the Female RS232 port (module 4) */
     UART_RS232_FemaleParameters(115200, NO, 1);
     UART_RS232_Female(ON, ON, ON);
     IPC9bits.U4IP = 4; // interrupt priority is 4
-    IPC9bits.U4IS = 3; // interrupt sub-priority is 3
+    IPC9bits.U4IS = 1; // interrupt sub-priority is 3
     dummy = U4RXREG;
     dummy = U4RXREG;
     dummy = U4RXREG;
@@ -380,6 +383,7 @@ void InitUART(void)
     IFS2bits.U4TXIF = 0;            // clear interrupt
     UART_ReceiverInterrupt4(ON);
     UART_TransmitterInterrupt4(OFF);
+    UART_RS232_FemaleNewlineMode = TRUE; // add a new line after a carriage return
 }
 
 /******************************************************************************/

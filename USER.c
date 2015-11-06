@@ -24,6 +24,7 @@
 #include <stdio.h>         /* For sprintf definition */
 
 #include "ADC.h"
+#include "CMD.h"
 #include "DMA.h"
 #include "EXCEPTIONS.h"
 #include "FLASH.h"
@@ -251,6 +252,7 @@ void Init_System(void)
     InitUART();
     InitException();
     InitDMA();
+    InitCMD();
 #ifdef Catalyst_Expander_IR_RF_revA
     InitIR();
     InitRF();
