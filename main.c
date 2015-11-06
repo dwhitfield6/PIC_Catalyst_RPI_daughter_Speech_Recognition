@@ -6,6 +6,7 @@
  * Date         Revision    Comments
  * MM/DD/YY
  * --------     ---------   ----------------------------------------------------
+ * 11/06/15     10.1        Version change only.
  * 10/29/15     10.0_DW0b   Fixed bug that always made the system a SPI Master.
  *                          Added disable for PWM function so it turns off the
  *                            RGB during sleep.
