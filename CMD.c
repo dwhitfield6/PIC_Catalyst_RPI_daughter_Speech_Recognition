@@ -33,8 +33,8 @@
 /******************************************************************************/
 COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS]= {
     {"TELEVISION POWER", IR_SendNEC_Repeat_CMD,&Sanyo_Power},
-    {"VOLUME UP", IR_SendNEC_Repeat_CMD,&Sanyo_Volume_Up},
-    {"VOLUME DOWN", IR_SendNEC_Repeat_CMD,&Sanyo_Volume_Down},
+    {"VOLUME LOUD", IR_SendNEC_Repeat_CMD,&Sanyo_Volume_Up},
+    {"VOLUME QUIET", IR_SendNEC_Repeat_CMD,&Sanyo_Volume_Down},
     {"LIVINGROOM LIGHT", RF_SendCode_CMD,LivingroomLight},
     {"LIVINGROOM FAN", RF_SendCode_CMD,LivingroomFanOn},
     {"BEDROOM LIGHT", RF_SendCode_CMD,BedroomLight},
