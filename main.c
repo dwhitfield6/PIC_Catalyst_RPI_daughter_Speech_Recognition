@@ -8,6 +8,8 @@
  * --------     ---------   ----------------------------------------------------
  * 11/06/15     10.1a       Added a new dictionary.
  *                          Resolved UART overflow problems.
+ *                          Changed every command to 2 words to prevent
+ *                            misfiring.  
  * 11/06/15     10.1        Version change only.
  * 10/29/15     10.0_DW0b   Fixed bug that always made the system a SPI Master.
  *                          Added disable for PWM function so it turns off the
@@ -98,7 +100,7 @@ short main (void)
 {
     unsigned long i;
     unsigned char index = 0;
-    unsigned long LED_Counter = LED_TIMEOUT + 1;
+    unsigned long LED_Counter = LED_TIMEOUT;
     unsigned char dummy;
     
     /* Initialize */
@@ -137,7 +139,7 @@ short main (void)
     UART_RaspSendString("export LD_LIBRARY_PATH=/usr/local/lib\r\n"); // export library
     UART_RaspSendString("export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig\r\n"); // export configuration
     UART_RaspSendString("pocketsphinx_continuous -hmm /usr/local/share/pocketsphinx/model/en-us/en-us"
-            " -lm 2579.lm -dict 2579.dic -inmic yes -adcdev sysdefault\r\n");
+            " -lm 1751.lm -dict 1751.dic -inmic yes -adcdev sysdefault\r\n");
     
     /* start checking for the speech command breaker "READY..." */
     CMD_PhraseCheckingReset(0);

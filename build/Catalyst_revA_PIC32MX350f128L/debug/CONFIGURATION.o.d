@@ -1,3 +1,0 @@
-build/Catalyst_revA_PIC32MX350f128L/debug/CONFIGURATION.o:  \
- CONFIGURATION.c  \
-USER.h 
