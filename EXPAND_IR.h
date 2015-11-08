@@ -96,5 +96,6 @@ void IR_SendNECRepeat(void);
 void IR_SendNEC(unsigned long* NEC);
 void IR_SendNEC_Repeat(unsigned long* NEC);
 void IR_SendNEC_Repeat_CMD(void);
+void IR_SendNEC_Repeat_Multiple_CMD(void);
 
 #endif	/* EXPAND_IR_H */

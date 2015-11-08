@@ -292,6 +292,32 @@ void IR_SendNEC_Repeat_CMD(void)
     IR_SendNECRepeat();
 }
 
+/******************************************************************************/
+/* IR_SendNEC_Repeat_Multiple_CMD
+ *
+ * The function sends the NEC code and a repeat multiple times from the global
+ *  CommandData.
+/******************************************************************************/
+void IR_SendNEC_Repeat_Multiple_CMD(void)
+{
+    unsigned char i;
+    
+    if(CommandDataPointer == Sanyo_Volume_Up || CommandDataPointer == Sanyo_Volume_Down)
+    {
+        for(i=0;i<5;i++)
+        {
+            IR_SendNEC(CommandDataPointer);
+            IR_SendNECRepeat();
+            MSC_DelayUS(5000);
+        }
+    }
+    else
+    {
+        IR_SendNEC(CommandDataPointer);
+        IR_SendNECRepeat();
+    }
+}
+
 /*-----------------------------------------------------------------------------/
  End of File
 /-----------------------------------------------------------------------------*/

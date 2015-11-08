@@ -1,4 +1,7 @@
 build/Catalyst_revA_PIC32MX370f512L/production/TIMERS.o:  \
 TIMERS.c  \
+ EXPAND_IR.h  \
 USER.h  \
- TIMERS.h 
+MISC.h  \
+SYSTEM.h  \
+TIMERS.h 

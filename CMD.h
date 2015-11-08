@@ -46,6 +46,13 @@
 #define PHRASE_CHANNELS 10
 
 /******************************************************************************/
+/* MAX_PHRASE_LENGTH
+ *
+ * This is the maximum phrase length.
+/******************************************************************************/
+#define MAX_PHRASE_LENGTH 50
+
+/******************************************************************************/
 /* Structures                                                                 */
 /******************************************************************************/
 typedef void (*pFunction)(void); // pointer to a function
@@ -64,7 +71,7 @@ typedef struct commands
 extern COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS];
 extern long* CommandDataPointer;
 extern unsigned char PhraseSearchFind[PHRASE_CHANNELS];
-extern unsigned char SearchPhrase[UART1_RECEIVE_SIZE];
+extern unsigned char SearchPhrase[PHRASE_CHANNELS][MAX_PHRASE_LENGTH];
 extern unsigned char CheckPhrase;
 extern unsigned long PhraseIndex[PHRASE_CHANNELS];
 

@@ -27,7 +27,7 @@
  *
  * This is the number of characters that fit in the UART 1 receive buffer.
 /******************************************************************************/
-#define UART1_RECEIVE_SIZE 6000
+#define UART1_RECEIVE_SIZE 4000
 #define UART1_TRANSMIT_SIZE 1000
 
 /******************************************************************************/

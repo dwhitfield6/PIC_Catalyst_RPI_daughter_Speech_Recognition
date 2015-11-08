@@ -10,6 +10,10 @@
  *                          Resolved UART overflow problems.
  *                          Changed every command to 2 words to prevent
  *                            misfiring.  
+ *                          Added color coordination to let the user know when
+ *                            to talk.
+ *                          Fixed multiple command functionality.
+ *                          Send 5 TV IR volume commands for each vocal command.
  * 11/06/15     10.1        Version change only.
  * 10/29/15     10.0_DW0b   Fixed bug that always made the system a SPI Master.
  *                          Added disable for PWM function so it turns off the
@@ -86,7 +90,7 @@
 /******************************************************************************/
 /* Defines                                                                    */
 /******************************************************************************/
-#define LED_TIMEOUT 0xFFFFF
+#define LED_TIMEOUT 0x3FFFF
 
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
@@ -144,10 +148,20 @@ short main (void)
     /* start checking for the speech command breaker "READY..." */
     CMD_PhraseCheckingReset(0);
     CMD_StreamingPhraseSet(CHECK_PHRASE, 0);
+        
+    /* let the user know when to talk starting by searching for Listening..." */
+    CMD_StreamingPhraseSet("Listening...", 1);
     
     while(1)
     {
         /* search for command */
+        if(CMD_StreamingPhraseFound(1))
+        {
+            LED_Counter = LED_TIMEOUT + 1;
+            PhraseSearchFind[1] = FALSE;  
+            CMD_PhraseCheckingClear(1);
+            PWM_SetColor(NOTHING, NOTHING,NOTHING);        
+        }
         if(CMD_StreamingPhraseFound(0))
         {
             UART_Module1(OFF);
@@ -159,6 +173,11 @@ short main (void)
                 UART_RS232_FemaleSendString(COMMANDS[index].command);
                 UART_RS232_FemaleSendString(CRLN);
                 LED_Counter = 0;
+                PWM_SetColor(GREEN, NOTHING,NOTHING);
+            }
+            else
+            {
+                PWM_SetColor(RED, NOTHING,NOTHING);
             }
             CMD_PhraseCheckingReset(0);
             UART_Module1(ON);
@@ -169,16 +188,12 @@ short main (void)
             IFS1bits.U1RXIF = 0;            // clear interrupt
             UART_ReceiverInterrupt1(ON);
             UART_Receiver1(ON);
-            UART_Transmitter1(ON);
+            UART_Transmitter1(ON);          
         }
         
         /* LED timing */
         if(LED_Counter < LED_TIMEOUT)
         {
-            if(LED_Counter == 0)
-            {
-                PWM_SetColor(GREEN, NOTHING,NOTHING);
-            }
             LED_Counter++;
         }
         else

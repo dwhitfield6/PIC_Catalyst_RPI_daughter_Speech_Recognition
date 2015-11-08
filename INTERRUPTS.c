@@ -411,13 +411,14 @@ void __ISR(_UART_1_VECTOR , IPL7AUTO) UART1_IntHandler (void)
                 }
                 UART_DebugSendChar(data);
                 /* check for a matching sequence to see if we should check the buffer for a phrase */
-                if(CMD_StreamingPhraseSearch(data,SearchPhrase,0))
+                if(CMD_StreamingPhraseSearch(data,&SearchPhrase[0][0],0))
                 {
                     if(RX1_Buffer_Place < (UART1_RECEIVE_SIZE - 1))
                     {
                         RX1_Buffer[RX1_Buffer_Place] = 0;
                     }
                 }
+                CMD_StreamingPhraseSearch(data,&SearchPhrase[1][0],1);
                 
                 if(UART_Debug_NewlineMode == TRUE)
                 {

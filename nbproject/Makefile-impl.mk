@@ -27,7 +27,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=PIC_Catalyst_RPI_daughter_Speech_Recognition
 
 # Active Configuration
-DEFAULTCONF=Catalyst_revA_PIC32MX350f128L
+DEFAULTCONF=Catalyst_revA_PIC32MX370f512L
 CONF=${DEFAULTCONF}
 
 # All Configurations

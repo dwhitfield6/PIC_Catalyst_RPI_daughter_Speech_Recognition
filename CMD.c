@@ -32,20 +32,20 @@
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
 COMMANDTYPE COMMANDS[NUMBER_OF_COMMANDS]= {
-    {"TELEVISION POWER", IR_SendNEC_Repeat_CMD,&Sanyo_Power},
-    {"VOLUME LOUD", IR_SendNEC_Repeat_CMD,&Sanyo_Volume_Up},
-    {"VOLUME QUIET", IR_SendNEC_Repeat_CMD,&Sanyo_Volume_Down},
-    {"LIVINGROOM LIGHT", RF_SendCode_CMD,LivingroomLight},
-    {"LIVINGROOM FAN", RF_SendCode_CMD,LivingroomFanOn},
-    {"BEDROOM LIGHT", RF_SendCode_CMD,BedroomLight},
-    {"BEDROOM FAN", RF_SendCode_CMD,BedroomFanOn},
-    {"CHRISTMAS BEAUTIFUL", RF_SendCode_CMD,ChristmasTreeColor},
-    {"CHRISTMAS UGLY", RF_SendCode_CMD,ChristmasTreeWhiteOn},
+    {"\r\nTELEVISION POWER\r\n", IR_SendNEC_Repeat_CMD,&Sanyo_Power},
+    {"\r\nVOLUME LOUD\r\n", IR_SendNEC_Repeat_Multiple_CMD,&Sanyo_Volume_Up},
+    {"\r\nVOLUME QUIET\r\n", IR_SendNEC_Repeat_Multiple_CMD,&Sanyo_Volume_Down},
+    {"\r\nLIVINGROOM LIGHT\r\n", RF_SendCode_CMD,LivingroomLight},
+    {"\r\nLIVINGROOM FAN\r\n", RF_SendCode_CMD,LivingroomFanOn},
+    {"\r\nBEDROOM LIGHT\r\n", RF_SendCode_CMD,BedroomLight},
+    {"\r\nBEDROOM FAN\r\n", RF_SendCode_CMD,BedroomFanOn},
+    {"\r\nCHRISTMAS BEAUTIFUL\r\n", RF_SendCode_CMD,ChristmasTreeColor},
+    {"\r\nCHRISTMAS UGLY\r\n", RF_SendCode_CMD,ChristmasTreeWhiteOn},
 };
 
 long* CommandDataPointer;
 unsigned char PhraseSearchFind[PHRASE_CHANNELS];
-unsigned char SearchPhrase[UART1_RECEIVE_SIZE];
+unsigned char SearchPhrase[PHRASE_CHANNELS][MAX_PHRASE_LENGTH];
 unsigned char CheckPhrase = FALSE;
 unsigned long PhraseIndex[PHRASE_CHANNELS];
 
@@ -143,7 +143,7 @@ void CMD_StreamingPhraseSet(unsigned char* phrase, unsigned char channel)
     unsigned char status;
     status = CMD_PhraseChecking(OFF);
     CMD_PhraseCheckingClear(channel);
-    MSC_StringCopy(phrase, &SearchPhrase[channel]);
+    MSC_StringCopy(phrase, &SearchPhrase[channel][0]);
     if(status)
     {
         CMD_PhraseChecking(ON);
@@ -176,14 +176,8 @@ unsigned char CMD_PhraseChecking(unsigned char state)
 /******************************************************************************/
 void CMD_PhraseCheckingClear(unsigned char channel)
 {
-    unsigned char status;
-    status = CMD_PhraseChecking(OFF);
     PhraseIndex[channel] = 0;
     PhraseSearchFind[channel] = 0;
-    if(status)
-    {
-        CMD_PhraseChecking(ON);
-    }
 }
 
 /******************************************************************************/

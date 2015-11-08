@@ -3,7 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/David/Documents/GitHub/PIC_Catalyst_RPI_daughter_Speech_Recognition/EXPAND_IR.h</file>
+            <file>file:/C:/Users/David/Documents/GitHub/PIC_Catalyst_RPI_daughter_Speech_Recognition/EXPAND_RF.c</file>
             <file>file:/C:/Users/David/Documents/GitHub/PIC_Catalyst_RPI_daughter_Speech_Recognition/main.c</file>
+            <file>file:/C:/Users/David/Documents/GitHub/PIC_Catalyst_RPI_daughter_Speech_Recognition/CMD.c</file>
+            <file>file:/C:/Users/David/Documents/GitHub/PIC_Catalyst_RPI_daughter_Speech_Recognition/UART.c</file>
+            <file>file:/C:/Users/David/Documents/GitHub/PIC_Catalyst_RPI_daughter_Speech_Recognition/EXPAND_IR.c</file>
+            <file>file:/C:/Users/David/Documents/GitHub/PIC_Catalyst_RPI_daughter_Speech_Recognition/INTERRUPTS.c</file>
+            <file>file:/C:/Users/David/Documents/GitHub/PIC_Catalyst_RPI_daughter_Speech_Recognition/UART.h</file>
         </group>
     </open-files>
 </project-private>
