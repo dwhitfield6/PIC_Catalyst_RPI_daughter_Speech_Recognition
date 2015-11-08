@@ -302,13 +302,13 @@ void IR_SendNEC_Repeat_Multiple_CMD(void)
 {
     unsigned char i;
     
-    if(CommandDataPointer == Sanyo_Volume_Up || CommandDataPointer == Sanyo_Volume_Down)
+    if(CommandDataPointer == &Sanyo_Volume_Up || CommandDataPointer == &Sanyo_Volume_Down)
     {
         for(i=0;i<5;i++)
         {
             IR_SendNEC(CommandDataPointer);
             IR_SendNECRepeat();
-            MSC_DelayUS(5000);
+            MSC_DelayUS(10000);
         }
     }
     else

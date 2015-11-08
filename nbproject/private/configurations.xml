@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="62">
   <projectmakefile>Makefile</projectmakefile>
-  <defaultConf>1</defaultConf>
+  <defaultConf>0</defaultConf>
   <confs>
     <conf name="Catalyst_revA_PIC32MX350f128L" type="2">
       <platformToolSN>:=MPLABComm-USB-Microchip:=&lt;vid>04D8:=&lt;pid>900A:=&lt;rev>0002:=&lt;man>Microchip Technology Inc.:=&lt;prod>PICkit 3:=&lt;sn>BUR143773766:=&lt;drv>x:=&lt;xpt>h:=end</platformToolSN>
